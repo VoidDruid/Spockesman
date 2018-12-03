@@ -27,6 +27,6 @@ def state(cls):
 
 def initial(cls):
     cls = state(cls)
-    INITIAL_STATE.__dict__['__name'] = cls.__name__
-    INITIAL_STATE.__dict__['__cls'] = cls
+    INITIAL_STATE.__dict__['_InitialStateHolder__name'] = cls.__name__
+    INITIAL_STATE.__dict__['_InitialStateHolder__cls'] = cls
     return cls

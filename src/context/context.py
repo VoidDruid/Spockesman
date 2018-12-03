@@ -2,7 +2,7 @@ from ..states.environment import STATES, INITIAL_STATE
 
 
 class Context:
-    def __init__(self, user_id, state=INITIAL_STATE.name):
+    def __init__(self, user_id, state=None):
         self.user_id = user_id
         self.__state = None
         self.state = state
@@ -11,7 +11,7 @@ class Context:
 
     def to_dict(self):
         return {
-            'state': self.state,
+            'state': self.__state,
             'input': self.input,
             'command': self.command,
             'user_id': self.user_id
@@ -19,10 +19,12 @@ class Context:
 
     @property
     def state(self):
-        return STATES[self.__state]
+        return STATES[self.__state](self)
 
     @state.setter
     def state(self, state_):
+        if not state_:
+            state_ = INITIAL_STATE.name
         if isinstance(state_, type):
             self.__state = state_.__name__
         else:

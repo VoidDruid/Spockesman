@@ -11,7 +11,11 @@ class RedisBackend(AbstractBackend):
         self.__redis = redis.Redis(db=db, host=host, port=port)
 
     def load(self, user_id):
-        return Context.from_dict(json.loads(self.__redis.get(user_id)))
+        data = self.__redis.get(user_id)
+        if data:
+            return Context.from_dict(json.loads(data))
+        else:
+            return Context(user_id)
 
     def save(self, user_id, context):
         self.__redis.set(user_id, json.dumps(context.to_dict()))
