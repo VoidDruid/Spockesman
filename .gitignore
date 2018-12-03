@@ -154,3 +154,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+config.yaml
+main.py

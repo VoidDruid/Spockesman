@@ -1,5 +1,23 @@
+from ..util.singleton import singleton
+
 STATES = {}
-INITIAL_STATE = None
+
+
+@singleton
+class InitialStateHolder:
+    __name = None
+    __cls = None
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def cls(self):
+        return self.__cls
+
+
+INITIAL_STATE = InitialStateHolder()
 
 
 def state(cls):
@@ -8,7 +26,7 @@ def state(cls):
 
 
 def initial(cls):
-    global INITIAL_STATE
-    STATES[cls.__name__] = cls
-    INITIAL_STATE = cls.__name__
+    cls = state(cls)
+    INITIAL_STATE.__dict__['__name'] = cls.__name__
+    INITIAL_STATE.__dict__['__cls'] = cls
     return cls
