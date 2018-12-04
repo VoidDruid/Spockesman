@@ -1,4 +1,4 @@
-from .global_commands import add_global
+from .commands_bindings import add_global, add_bound
 
 
 def handler(command):
@@ -9,6 +9,7 @@ def handler(command):
                 context.command = command.name
                 return func(context, user_input)
             return wrapper
+        add_bound(command, wrapper_state)
         return wrapper_state
     return decorator
 

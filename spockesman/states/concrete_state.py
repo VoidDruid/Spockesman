@@ -1,9 +1,13 @@
 from .command import Command
-from .global_commands import GLOBAL_COMMANDS
+from .commands_bindings import GLOBAL_COMMANDS, COMMANDS
 from .state import State
 
 
 class WrongCommandException(Exception):
+    pass
+
+
+class NoHandlerException(Exception):
     pass
 
 
@@ -14,7 +18,8 @@ class ConcreteState(State):
     def __init__(self, context):
         self._context = context
 
-    def process_input(self, text):
+    def __call__(self, *args, **kwargs):
+        text = args[0]
         if self._context.input:
             command = Command[self._context.command]
         else:
@@ -32,9 +37,13 @@ class ConcreteState(State):
     def transition(self, command):
         if command not in self.__commands:
             raise WrongCommandException(
-                f'Command {command} is not availiable in current state'
+                f"Command '{command}' is not availiable in current state"
                 )
-        return self.__commands[command]
+        if command not in COMMANDS:
+            raise NoHandlerException(
+                f"No handler registered for command '{command}'"
+            )
+        return COMMANDS[command](self.__commands[command])
 
     def set_commands(self, commands):
         self.__commands = commands

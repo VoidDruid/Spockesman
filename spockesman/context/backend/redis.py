@@ -2,8 +2,9 @@ import json
 
 import redis
 
-from .abstract import AbstractBackend
+from ...logger import log
 from ..context import Context
+from .abstract import AbstractBackend
 
 
 class RedisBackend(AbstractBackend):
@@ -31,4 +32,5 @@ class RedisBackend(AbstractBackend):
 
 
 def activate(config):
+    log.debug('Activating REDIS context backend')
     return RedisBackend(config['Host'], int(config['Port']), int(config['Name']))

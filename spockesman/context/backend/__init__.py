@@ -12,10 +12,14 @@ class Database:
     active = None
 
     def __getattr__(self, item):
-        if item not in ('active', 'load_backend') and not self.active:
+        if item not in ('active', 'load_backend') and not self.activated:
             raise BackendNotLoaded
         else:
             return getattr(self, item)
+
+    @property
+    def activated(self):
+        return bool(self.active)
 
     def load_backend(self, name, config):
         back = import_module('.'+name, package=__name__)

@@ -4,6 +4,7 @@ paired with their text representations that user can send.
 """
 from enum import Enum, auto
 
+from ..logger import log
 from ..util.singleton import singleton
 
 
@@ -25,6 +26,13 @@ class Command:
     def __getattr__(self, item):
         return getattr(self.inner_enum, item)
 
+    def __contains__(self, item):
+        try:
+            self.inner_enum[item]
+        except KeyError:
+            return False
+        return True
+
 
 Command = Command()
 
@@ -32,3 +40,4 @@ Command = Command()
 def generate_commands(config):
     Command.inner_enum = Enum('Command', {key: (value if value else auto()) for key, value in config.items()},
                               module=__name__)
+    log.debug(f'Loaded commands. Commands are: {list(Command.inner_enum)}')

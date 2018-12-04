@@ -8,7 +8,7 @@ class State(metaclass=ABCMeta):
     __commands: {}
 
     @abstractmethod
-    def process_input(self, text):
+    def __call__(self, *args, **kwargs):
         pass
 
     @abstractmethod
