@@ -5,7 +5,10 @@ def handler(command):
     def decorator(func):
         def wrapper_state(state):
             def wrapper(context, user_input):
-                context.state = state.__name__
+                if not isinstance(state, str):
+                    context.state = state.__name__
+                else:
+                    context.state = state
                 context.command = command.name
                 return func(context, user_input)
             return wrapper

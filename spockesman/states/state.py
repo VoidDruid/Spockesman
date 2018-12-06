@@ -1,27 +1,52 @@
-"""Abstract state, from which all others inherit."""
+from .command import Command
+from .commands_bindings import GLOBAL_COMMANDS, COMMANDS
+from .base_state import BaseState
+from .state_meta import StateMetaclass
 
-from abc import ABCMeta, abstractmethod
+
+class WrongCommandException(Exception):
+    pass
 
 
-class State(metaclass=ABCMeta):
+class NoHandlerException(Exception):
+    pass
+
+
+class State(BaseState, metaclass=StateMetaclass):
     """Class representing general user state."""
-    __commands: {}
+    commands = {}
 
-    @abstractmethod
+    transform = ('commands',)
+
+    def __init__(self, context):
+        self._context = context
+
     def __call__(self, *args, **kwargs):
-        pass
+        text = args[0]
+        if self._context.input:
+            command = Command[self._context.command]
+        else:
+            for command in Command:
+                if command.value == text:
+                    self._context.command = command.name
+                    break
+            else:
+                raise WrongCommandException(f'No such command: {text}')
+        executor = GLOBAL_COMMANDS.get(command, None)
+        if not executor:
+            executor = self.transition(command)
+        return executor(self._context, text)
 
-    @abstractmethod
     def transition(self, command):
-        pass
-
-    @abstractmethod
-    def set_commands(self, commands):
-        pass
-
-    @abstractmethod
-    def get_commands(self):
-        pass
+        if command not in self.commands:
+            raise WrongCommandException(
+                f"Command '{command}' is not availiable in current state"
+                )
+        if command not in COMMANDS:
+            raise NoHandlerException(
+                f"No handler registered for command '{command}'"
+            )
+        return COMMANDS[command](self.commands[command])
 
     def get_context(self):
-        pass
+        return self._context
