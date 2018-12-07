@@ -1,8 +1,7 @@
-from .command import Command
-from .state import WrongCommandException, NoHandlerException, State
 from .awaiting_state import AwaitingState
-from .transitions import handler, global_command
-from .environment import state, initial
+from .base import initial
+from .commands import *
+from .state import WrongCommandException, NoHandlerException, State
 
 
 def generate_states(data):

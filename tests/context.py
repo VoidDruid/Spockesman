@@ -30,8 +30,7 @@ class ContextTest(unittest.TestCase):
             state = context.state
 
     def test_context_state(self):
-        @M.state
-        class TestState:
+        class TestState(M.State):
             def __init__(self, context_):
                 pass
         context = M.Context(self.user_id, TestState)
@@ -46,7 +45,7 @@ class ContextTest(unittest.TestCase):
 
     def test_context_initial_state(self):
         @M.initial
-        class TestInitialState:
+        class TestInitialState(M.State):
             def __init__(self, context_):
                 pass
         context = M.Context(self.user_id)

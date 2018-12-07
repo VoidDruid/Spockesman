@@ -1,7 +1,5 @@
-from .command import Command
-from .commands_bindings import GLOBAL_COMMANDS, COMMANDS
-from .base_state import BaseState
-from .state_meta import StateMetaclass
+from .commands import Command, GLOBAL_COMMANDS, COMMANDS
+from .base import BaseState
 
 
 class WrongCommandException(Exception):
@@ -12,7 +10,7 @@ class NoHandlerException(Exception):
     pass
 
 
-class State(BaseState, metaclass=StateMetaclass):
+class State(BaseState):
     """Class representing general user state."""
     commands = {}
 

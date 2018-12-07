@@ -1,4 +1,4 @@
-from ..logger import log
+from spockesman.logger import log
 
 GLOBAL_COMMANDS = {}
 

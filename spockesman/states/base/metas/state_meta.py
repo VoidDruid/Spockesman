@@ -1,7 +1,7 @@
-from abc import ABCMeta
+from .environment import STATES
 
 
-class StateMetaclass(ABCMeta, type):
+class StateMeta(type):
 
     def __new__(mcs, name, bases, dct):
         transform = dct.get('transform', [])
@@ -15,4 +15,7 @@ class StateMetaclass(ABCMeta, type):
 
         for itm in transform:
             dct[itm] = property_gen(itm)
-        return type.__new__(mcs, name, bases, dct)
+
+        cls = super().__new__(mcs, name, bases, dct)
+        STATES[cls.__name__] = cls
+        return cls

@@ -7,9 +7,9 @@ class AwaitingState(State):
     will be automatically redirected to the specified command,
     unless it's another registered *Command* or in *GLOBAL_COMMANDS*
     """
-    awaited_command = None
+    await = None
 
-    transform = ('awaited_command', )
+    transform = ('await', )
 
     def __init__(self, context):
         super().__init__(context)
@@ -19,4 +19,4 @@ class AwaitingState(State):
         try:
             return super().__call__(text)
         except WrongCommandException:
-            return self.transition(self.awaited_command)(self._context, text)
+            return self.transition(self.await)(self._context, text)

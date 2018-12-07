@@ -1,5 +1,5 @@
-from ..logger import log
-from ..util.singleton import singleton
+from spockesman.logger import log
+from spockesman.util.singleton import singleton
 
 STATES = {}
 
@@ -21,15 +21,7 @@ class InitialStateHolder:
 INITIAL_STATE = InitialStateHolder()
 
 
-def state(cls):
-    log.debug(f'Registering state {cls.__name__}')
-    STATES[cls.__name__] = cls
-    return cls
-
-
 def initial(cls):
-    cls = state(cls)
-    log.debug(f'Setting initial state: {cls.__name__}')
     INITIAL_STATE.__dict__['_InitialStateHolder__name'] = cls.__name__
     INITIAL_STATE.__dict__['_InitialStateHolder__cls'] = cls
     return cls

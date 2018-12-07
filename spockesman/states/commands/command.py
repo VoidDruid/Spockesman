@@ -4,8 +4,8 @@ paired with their text representations that user can send.
 """
 from enum import Enum, auto
 
-from ..logger import log
-from ..util.singleton import singleton
+from spockesman.logger import log
+from spockesman.util.singleton import singleton
 
 
 @singleton

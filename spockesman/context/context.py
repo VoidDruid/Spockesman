@@ -1,4 +1,4 @@
-from ..states.environment import INITIAL_STATE, STATES
+from spockesman.states.base import INITIAL_STATE, STATES
 
 
 class Context:

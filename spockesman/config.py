@@ -3,7 +3,7 @@ import yaml
 from .context.backend import database
 from .logger import log
 from .states import generate_states
-from .states.command import generate_commands
+from .states.commands.command import generate_commands
 
 COMMANDS_SECTION = 'Commands'
 CONTEXT_BACKEND_SECTION = 'ContextBackend'

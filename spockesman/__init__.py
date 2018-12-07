@@ -1,7 +1,6 @@
 from .processor import process
 from .config import load_config
-from .states import State, AwaitingState, state, initial, Command, handler, global_command,\
-    WrongCommandException
+from .states import *
 from .context.context import Context
 from .context.backend import BackendNotLoaded
 
