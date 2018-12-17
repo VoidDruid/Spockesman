@@ -1,0 +1,23 @@
+Commands:
+    Start: /start
+    End: /end
+    Echo:
+    Hi: /hi
+ContextBackend:
+    Type: redis
+    Host: localhost
+    Port: 6379
+    User:
+    Password:
+    Name: 0
+Global: [Hi]
+States:
+    Main:
+        Type: C
+        Commands:
+            Start: Repeat
+    Repeat:
+        Type: A
+        Await: Echo
+        Commands:
+            End: Main
