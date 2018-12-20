@@ -1,5 +1,5 @@
 # Spockesman 
-## State-machine based framework for chat-bots
+## Declarative state-machine for chat-bots
 
 ![Logo](logo.jpeg)
 
