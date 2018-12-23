@@ -27,7 +27,7 @@ def hi(context, user_input):
 
 @state
 class MainState(AwaitingState):
-    await = Command.Echo
+    awaiting = Command.Echo
     commands = {
             Command.Echo: 'MainState',
             Command.End: 'InitialState'
