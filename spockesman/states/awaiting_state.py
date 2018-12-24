@@ -1,6 +1,8 @@
 from .state import State, WrongCommandException
+from .metastates import export
 
 
+@export('Awaiting')
 class AwaitingState(State):
     """
     All input this state gets

@@ -1,6 +1,6 @@
 from .commands import Command, GLOBAL_COMMANDS, COMMANDS
 from .base import BaseState
-
+from .metastates import export
 
 class WrongCommandException(Exception):
     pass
@@ -10,6 +10,7 @@ class NoHandlerException(Exception):
     pass
 
 
+@export('Basic')
 class State(BaseState):
     """Class representing general user state."""
     commands = {}
