@@ -21,4 +21,4 @@ class AwaitingState(State):
         try:
             return super().__call__(text)
         except WrongCommandException:
-            return self.transition(self.awaiting)(self._context, text)
+            return self.transition(self.__awaiting)(self._context, text)

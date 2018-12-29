@@ -18,6 +18,6 @@ States:
             Start: Repeat
     Repeat:
         Type: Awaiting
-        Await: Echo
+        Awaiting: Echo
         Commands:
             End: Main

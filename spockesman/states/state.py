@@ -1,6 +1,7 @@
 from .commands import Command, GLOBAL_COMMANDS, COMMANDS
-from .base import BaseState
+from .base_state import BaseState
 from .metastates import export
+
 
 class WrongCommandException(Exception):
     pass
@@ -37,7 +38,7 @@ class State(BaseState):
         return executor(self._context, text)
 
     def transition(self, command):
-        if command not in self.commands:
+        if command not in self.__commands:
             raise WrongCommandException(
                 f"Command '{command}' is not availiable in current state"
                 )
@@ -45,7 +46,7 @@ class State(BaseState):
             raise NoHandlerException(
                 f"No handler registered for command '{command}'"
             )
-        return COMMANDS[command](self.commands[command])
+        return COMMANDS[command](self.__commands[command])
 
     def get_context(self):
         return self._context
