@@ -1,5 +1,5 @@
 from .awaiting_state import AwaitingState
-from .base import initial
+from .base import initial, ConstantViolationException
 from .commands import *
 from .state import WrongCommandException, NoHandlerException, State
 from .metastates import META_STATES, export

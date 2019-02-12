@@ -3,6 +3,7 @@ from copy import deepcopy
 from .environment import STATES
 from .exceptions import ConstantViolationException
 
+
 class StateMeta(type):
 
     def __setattr__(self, name, value):
