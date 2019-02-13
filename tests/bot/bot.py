@@ -18,7 +18,6 @@ class TelegramBot:
 
     def __init__(self):
         self.__locks = {}
-        self.__images = {}
         for _ in range(TelegramBot.__number_threads):
             t = Thread(target=self.process_messages, daemon=True)
             t.start()
@@ -38,9 +37,6 @@ class TelegramBot:
     def release_lock(self, chat_id):
         self.__locks[chat_id].release()
         self.__locks.pop(chat_id)
-
-    def get_bot_info(self):
-        return self.__updater.bot.get_me()
 
     @property
     def start_method(self):

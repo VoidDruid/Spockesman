@@ -13,11 +13,11 @@ ContextBackend:
 Global: [Hi]
 States:
     Main:
-        Type: C
+        Type: Basic
         Commands:
             Start: Repeat
     Repeat:
-        Type: A
-        Await: Echo
+        Type: Awaiting
+        Awaiting: Echo
         Commands:
             End: Main
