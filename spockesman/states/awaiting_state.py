@@ -1,6 +1,8 @@
 from .state import State, WrongCommandException
+from .metastates import export
 
 
+@export('Awaiting')
 class AwaitingState(State):
     """
     All input this state gets
@@ -9,7 +11,7 @@ class AwaitingState(State):
     """
     awaiting = None
 
-    transform = ('awaiting', )
+    const = ('awaiting', )
 
     def __init__(self, context):
         super().__init__(context)
@@ -19,4 +21,4 @@ class AwaitingState(State):
         try:
             return super().__call__(text)
         except WrongCommandException:
-            return self.transition(self.awaiting)(self._context, text)
+            return self.transition(self.__awaiting)(self._context, text)

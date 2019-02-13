@@ -20,4 +20,4 @@ class ConfigTest(unittest.TestCase):
 
     def test_backend(self):
         self.assertTrue(M.context.backend.database.activated)
-        self.assertTrue(isinstance(M.context.backend.database.active, M.context.backend.redis.RedisBackend))
+        self.assertIsInstance(M.context.backend.database.active, M.context.backend.redis.RedisBackend)

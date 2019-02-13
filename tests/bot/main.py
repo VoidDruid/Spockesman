@@ -1,6 +1,5 @@
 from tests.bot.bot import bot
-from spockesman import (AwaitingState, Command, State, global_command,
-                        handler, initial, load_config, state)
+from spockesman import AwaitingState, Command, State, global_command, handler, initial, load_config
 
 load_config('tests/bot/config.yaml')
 
@@ -25,7 +24,6 @@ def hi(context, user_input):
     return 'Hello!', None
 
 
-@state
 class MainState(AwaitingState):
     awaiting = Command.Echo
     commands = {
