@@ -11,6 +11,6 @@ setup(
     long_description=open(join(dirname(__file__), 'README.txt')).read(),
     install_requires=[
         'redis==3.0.1',
-        'PyYAML==3.13'
+        'PyYAML==4.2b1'
     ]
 )
