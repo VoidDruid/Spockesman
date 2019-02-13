@@ -4,6 +4,7 @@ from .environment import STATES
 from .exceptions import ConstantViolationException
 
 
+# TODO: check if constant attrs exist
 class StateMeta(type):
 
     def __setattr__(self, name, value):
