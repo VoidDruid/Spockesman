@@ -14,7 +14,7 @@ class BaseState(metaclass=AbstractStateMeta):
 
     @classmethod
     def is_constant_attr(cls, name):
-        if name in cls.__dict__.get('__const_list', {}):
+        if name in cls.__dict__.get('__const_attrs', {}):
             return True
         return False
 

@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from .environment import STATES
 from .exceptions import ConstantViolationException
 
@@ -8,7 +6,7 @@ from .exceptions import ConstantViolationException
 class StateMeta(type):
 
     def __setattr__(self, name, value):
-        if name in self.__dict__.get('__const_list', {}):
+        if name in self.__dict__.get('__const_attrs', {}):
             raise ConstantViolationException()
         super().__setattr__(name, value)
 
@@ -18,14 +16,11 @@ class StateMeta(type):
         except KeyError:
             const = tuple()
         if bases:
-            last_const = bases[0].const
+            last_const = bases[0].__dict__['__const_attrs']
         else:
             last_const = tuple()
 
-        const = tuple({*const, *last_const})
-        
-        dct['const'] = const
-        dct['__const_list'] = [*const]
+        dct['__const_attrs'] = frozenset((*const, *last_const))
 
         cls = super().__new__(mcs, name, bases, dct)
         STATES[name] = cls
