@@ -8,23 +8,25 @@ class ConstantsTest(unittest.TestCase):
     user_id = '12345'
     context = M.Context(user_id)
 
+    def test_basic_constants(self):
+        with self.assertRaises(M.states.ConstantViolationException):
+            M.State.commands = []
+        with self.assertRaises(M.states.ConstantViolationException):
+            M.AwaitingState.commands = []
+        with self.assertRaises(M.states.ConstantViolationException):
+            M.AwaitingState.awaiting = 1
+
     def test_default_state_constants(self):
         state = M.State(self.context)
-
-        def test_commands_exception():
+        with self.assertRaises(M.states.ConstantViolationException):
             state.commands = []
-        self.assertRaises(M.states.ConstantViolationException, test_commands_exception)
 
     def test_awaiting_state_constants(self):
         state = M.AwaitingState(self.context)
-
-        def test_commands_exception():
+        with self.assertRaises(M.states.ConstantViolationException):
             state.commands = []
-
-        def test_awaiting_exception():
+        with self.assertRaises(M.states.ConstantViolationException):
             state.awaiting = 1
-        self.assertRaises(M.states.ConstantViolationException, test_commands_exception)
-        self.assertRaises(M.states.ConstantViolationException, test_awaiting_exception)
 
     def test_custom_transform(self):
         class NewState(M.State):
