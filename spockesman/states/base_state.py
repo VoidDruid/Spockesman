@@ -10,7 +10,7 @@ from .metastates import ignore
 class BaseState(metaclass=AbstractStateMeta):
     """Class representing general user state."""
     commands: {}
-    transform: []
+    const: ()
 
     @classmethod
     def is_constant_attr(cls, name):

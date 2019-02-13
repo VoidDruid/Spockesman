@@ -16,7 +16,7 @@ class State(BaseState):
     """Class representing general user state."""
     commands = {}
 
-    transform = ('commands',)
+    const = ('commands',)
 
     def __init__(self, context):
         self._context = context

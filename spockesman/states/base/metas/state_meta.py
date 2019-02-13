@@ -14,18 +14,18 @@ class StateMeta(type):
 
     def __new__(mcs, name, bases, dct):
         try:
-            transform = dct['transform']
+            const = dct['const']
         except KeyError:
-            transform = tuple()
+            const = tuple()
         if bases:
-            last_transform = bases[0].transform
+            last_const = bases[0].const
         else:
-            last_transform = tuple()
+            last_const = tuple()
 
-        transform = tuple({*transform, *last_transform})
+        const = tuple({*const, *last_const})
         
-        dct['transform'] = transform
-        dct['__const_list'] = [*transform]
+        dct['const'] = const
+        dct['__const_list'] = [*const]
 
         cls = super().__new__(mcs, name, bases, dct)
         STATES[name] = cls

@@ -11,7 +11,7 @@ class AwaitingState(State):
     """
     awaiting = None
 
-    transform = ('awaiting', )
+    const = ('awaiting', )
 
     def __init__(self, context):
         super().__init__(context)

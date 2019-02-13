@@ -28,19 +28,19 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             state.awaiting = 1
 
-    def test_custom_transform(self):
+    def test_custom_const(self):
         class NewState(M.State):
             test = "Test string"
-            transform = ('test',)
+            const = ('test',)
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.test = "New string"
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.commands = []
 
-    def test_awaiting_custom_transform(self):
+    def test_awaiting_custom_const(self):
         class NewState(M.AwaitingState):
             test = "Test string"
-            transform = ('test',)
+            const = ('test',)
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.test = "New string"
         with self.assertRaises(M.states.ConstantViolationException):
@@ -48,13 +48,13 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.awaiting = 1
 
-    def test_inherited_custom_transform(self):
+    def test_inherited_custom_const(self):
         class NewState(M.AwaitingState):
             test = "Test string"
-            transform = ('test',)
+            const = ('test',)
 
         class NewSecondState(NewState):
-            transform = ('another', )
+            const = ('another', )
         with self.assertRaises(M.states.ConstantViolationException):
             NewSecondState.test = "New string"
         with self.assertRaises(M.states.ConstantViolationException):
