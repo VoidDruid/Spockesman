@@ -14,7 +14,7 @@ def process(user_id, user_input, context=None):
             log.exception(e)
             return None, None
     try:
-        reply, ui = context.state(user_input)
+        result = context.state(user_input)
     except WrongCommandException as e:
         log.error(f"Tried to process input, but user's input is neither global command, "
                   f"or a command available in current state: {type(context.state).__name__}")
@@ -26,4 +26,4 @@ def process(user_id, user_input, context=None):
         return None, None
     if load:
         database.save(user_id, context)
-    return reply, ui
+    return result

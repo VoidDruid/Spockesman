@@ -3,6 +3,8 @@ Commands:
     End: /end
     Echo:
     Hi: /hi
+    Passd:
+    Glob: /lol
 ContextBackend:
     Type: redis
     Host: localhost
@@ -10,14 +12,23 @@ ContextBackend:
     User:
     Password:
     Name: 0
-Global: [Hi]
+Global: [Globs]
 States:
     Main:
         Type: Basic
         Commands:
             Start: Repeat
+            Hi: Passing
     Repeat:
-        Type: Awaiting
-        Awaiting: Echo
+        Type: Repeating
+        Repeating: Echo
         Commands:
             End: Main
+    Passing:
+        Type: Pass
+        Passer:
+            Command:
+                Type: COMMAND
+                Value: Passd
+            State: Repeat
+

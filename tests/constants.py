@@ -12,21 +12,21 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             M.State.commands = []
         with self.assertRaises(M.states.ConstantViolationException):
-            M.AwaitingState.commands = []
+            M.RepeatingState.commands = []
         with self.assertRaises(M.states.ConstantViolationException):
-            M.AwaitingState.awaiting = 1
+            M.RepeatingState.repeating = 1
 
     def test_default_state_constants(self):
         state = M.State(self.context)
         with self.assertRaises(M.states.ConstantViolationException):
             state.commands = []
 
-    def test_awaiting_state_constants(self):
-        state = M.AwaitingState(self.context)
+    def test_Repeating_state_constants(self):
+        state = M.RepeatingState(self.context)
         with self.assertRaises(M.states.ConstantViolationException):
             state.commands = []
         with self.assertRaises(M.states.ConstantViolationException):
-            state.awaiting = 1
+            state.repeating = 1
 
     def test_custom_const(self):
         class NewState(M.State):
@@ -37,8 +37,8 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.commands = []
 
-    def test_awaiting_custom_const(self):
-        class NewState(M.AwaitingState):
+    def test_Repeating_custom_const(self):
+        class NewState(M.RepeatingState):
             test = "Test string"
             const = ('test',)
         with self.assertRaises(M.states.ConstantViolationException):
@@ -46,10 +46,10 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.commands = []
         with self.assertRaises(M.states.ConstantViolationException):
-            NewState.awaiting = 1
+            NewState.repeating = 1
 
     def test_inherited_custom_const(self):
-        class NewState(M.AwaitingState):
+        class NewState(M.RepeatingState):
             test = "Test string"
             const = ('test',)
 
@@ -60,6 +60,6 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             NewSecondState.commands = []
         with self.assertRaises(M.states.ConstantViolationException):
-            NewSecondState.awaiting = 1
+            NewSecondState.repeating = 1
         with self.assertRaises(M.states.ConstantViolationException):
             NewSecondState.another = 1

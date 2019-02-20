@@ -26,6 +26,7 @@ class State(BaseState):
         if self._context.input:
             command = Command[self._context.command]
         else:
+            # TODO: optimize search for command
             for command in Command:
                 if command.value == text:
                     self._context.command = command.name
@@ -38,7 +39,7 @@ class State(BaseState):
         return executor(self._context, text)
 
     def transition(self, command):
-        if command not in self.__commands:
+        if command not in self.commands:
             raise WrongCommandException(
                 f"Command '{command}' is not availiable in current state"
                 )
@@ -46,7 +47,7 @@ class State(BaseState):
             raise NoHandlerException(
                 f"No handler registered for command '{command}'"
             )
-        return COMMANDS[command](self.__commands[command])
+        return COMMANDS[command](self.commands[command])
 
     def get_context(self):
         return self._context

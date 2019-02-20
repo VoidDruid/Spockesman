@@ -1,6 +1,10 @@
 from spockesman.states.base import INITIAL_STATE, STATES
 
 
+# TODO:
+#  - input to __input and metohds is_input, set_input
+#  - custom data classes, store data object class
+#  - command to __command and property getter
 class Context:
     def __init__(self, user_id, state=None, data=None):
         self.user_id = user_id
@@ -14,12 +18,16 @@ class Context:
             self.data = data
 
     def to_dict(self):
+        if isinstance(self.data, dict) or isinstance(self.data, list):
+            data_dump = self.data
+        #elif hasattr(self.data, 'to_dict'):
+        #    data_dump = self.data.to_dict()
         return {
             'state': self.__state,
             'input': self.input,
             'command': self.command,
             'user_id': self.user_id,
-            'data': self.data
+            'data': data_dump
         }
 
     @property
