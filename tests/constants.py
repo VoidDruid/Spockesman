@@ -1,7 +1,7 @@
 import unittest
 import importlib
 
-M = importlib.import_module('spockesman')
+M = importlib.reload(importlib.import_module('spockesman'))
 
 
 class ConstantsTest(unittest.TestCase):
