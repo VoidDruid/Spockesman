@@ -21,7 +21,7 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             state.commands = []
 
-    def test_Cyclic_state_constants(self):
+    def test_cyclic_state_constants(self):
         state = M.CyclicState(self.context)
         with self.assertRaises(M.states.ConstantViolationException):
             state.commands = []
@@ -37,7 +37,7 @@ class ConstantsTest(unittest.TestCase):
         with self.assertRaises(M.states.ConstantViolationException):
             NewState.commands = []
 
-    def test_Cyclic_custom_const(self):
+    def test_cyclic_custom_const(self):
         class NewState(M.CyclicState):
             test = "Test string"
             const = ('test',)

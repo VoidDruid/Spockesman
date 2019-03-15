@@ -1,7 +1,8 @@
 from queue import Queue
 
 
-# TODO: implement caching messages to redis backend if queue becomes too long
+# TODO: implement persistence, dump unsent messages to redis on shutdown and load on startup
+# TODO: implement caching some messages during runtime to redis backend if queue becomes too long
 class OrderedKeyQueue(Queue):
     """
     Queue that orders items put into it by thier keys.
