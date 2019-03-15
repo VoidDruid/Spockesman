@@ -18,15 +18,15 @@ States:
         Type: Basic
         Commands:
             Start: Repeat
-            Hi: Passing
+            Hi: Transient
     Repeat:
-        Type: Repeating
-        Repeating: Echo
+        Type: Cyclic
+        Cycle: Echo
         Commands:
             End: Main
-    Passing:
-        Type: Pass
-        Passer:
+    Transient:
+        Type: Transient
+        Transition:
             Command:
                 Type: COMMAND
                 Value: Passd

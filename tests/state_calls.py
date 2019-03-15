@@ -46,11 +46,11 @@ class StateCallsTest(unittest.TestCase):
 
     def test_basic_state_s(self):
         self.assertEqual(STATES['Main'](self.context)('/hi'), self.hello_eng)
-        self.assertEqual(type(self.context.state).__name__, 'Passing')
+        self.assertEqual(type(self.context.state).__name__, 'Transient')
 
     def test_repeat_state(self):
         self.context.state = 'Repeat'
-        self.assertEqual(self.context.state.repeating, M.Command.Echo)
+        self.assertEqual(self.context.state.cycle, M.Command.Echo)
         self.assertEqual(STATES['Repeat'](self.context)('lalala'), ('lalala', None))
         self.assertEqual(type(self.context.state).__name__, 'Repeat')
 
@@ -61,7 +61,7 @@ class StateCallsTest(unittest.TestCase):
         self.assertEqual(type(self.context.state).__name__, 'Main')
 
     def test_pass_state(self):
-        self.context.state = 'Passing'
-        self.assertTrue(hasattr(self.context.state, 'passer'))
-        self.assertEqual(STATES['Passing'](self.context)('lala'), self.pass_ru)
+        self.context.state = 'Transient'
+        self.assertTrue(hasattr(self.context.state, 'transition'))
+        self.assertEqual(STATES['Transient'](self.context)('lala'), self.pass_ru)
         self.assertEqual(type(self.context.state).__name__, 'Repeat')

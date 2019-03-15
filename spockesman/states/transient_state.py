@@ -3,18 +3,18 @@ from .state import State, WrongCommandException
 from .metastates import export
 
 
-@export('Pass')
-class PassState(State):
-    passer = {
+@export('Transient')
+class TransientState(State):
+    transition = {
         'Command': None,
         'State': None
     }
 
-    const = ('passer',)
+    const = ('transition',)
 
     def __call__(self, *args, **kwargs):
         text = args[0]
         try:
             return super().__call__(text)
         except WrongCommandException:
-            return COMMANDS[self.passer['Command']](self.passer['State'])(self._context, text)
+            return COMMANDS[self.transition['Command']](self.transition['State'])(self._context, text)

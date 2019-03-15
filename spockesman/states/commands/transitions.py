@@ -1,4 +1,4 @@
-from states.commands.util import default_context_transform
+from .util import default_context_transform
 from .commands_bindings import add_global, add_bound
 
 
