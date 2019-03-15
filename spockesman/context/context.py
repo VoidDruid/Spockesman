@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from spockesman.states.base import INITIAL_STATE, STATES
 
 
@@ -29,6 +31,12 @@ class Context:
             'user_id': self.user_id,
             'data': data_dump
         }
+
+    def clone(self, context):
+        self.__state = context.state
+        self.input = context.input
+        self.command = context.command
+        self.data = deepcopy(context.data)
 
     @property
     def state(self):
