@@ -8,6 +8,16 @@ from spockesman.logger import log
 from spockesman.util.singleton import singleton
 
 
+# TODO: rewrite logic for triggers
+class CommandDescriptor:
+    def __init__(self, text, additional_triggers=None):
+        self.text = text
+        if additional_triggers is None:
+            self.triggers = {text}
+        else:
+            self.triggers = {*additional_triggers, text}
+
+
 @singleton
 class Command:
     """

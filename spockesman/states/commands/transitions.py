@@ -1,3 +1,4 @@
+from .util import default_context_transform
 from .commands_bindings import add_global, add_bound
 
 
@@ -5,11 +6,7 @@ def handler(command):
     def decorator(func):
         def wrapper_state(state):
             def wrapper(context, user_input):
-                if not isinstance(state, str):
-                    context.state = state.__name__
-                else:
-                    context.state = state
-                context.command = command.name
+                default_context_transform(context, state, command)
                 return func(context, user_input)
             return wrapper
         add_bound(command, wrapper_state)

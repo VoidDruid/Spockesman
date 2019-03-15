@@ -1,5 +1,5 @@
 from tests.bot.bot import bot
-from spockesman import RepeatingState, Command, State, global_command, handler, initial, load_config
+from spockesman import CyclicState, Command, State, global_command, handler, initial, load_config
 
 load_config('tests/bot/config.yaml')
 
@@ -24,8 +24,8 @@ def hi(context, user_input):
     return 'Hello!', None
 
 
-class MainState(RepeatingState):
-    Repeating = Command.Echo
+class MainState(CyclicState):
+    Cyclic = Command.Echo
     commands = {
             Command.Echo: 'MainState',
             Command.End: 'InitialState'

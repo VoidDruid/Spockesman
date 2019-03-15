@@ -26,11 +26,11 @@ class ConfigTest(unittest.TestCase):
     def test_states(self):
         self.assertIn('Main', STATES)
         self.assertIn('Repeat', STATES)
-        self.assertIn('Passing', STATES)
+        self.assertIn('Transient', STATES)
 
     def test_states_config(self):
-        self.assertDictEqual(STATES['Main'].commands, {M.Command.Start: 'Repeat', M.Command.Hi: 'Passing'})
+        self.assertDictEqual(STATES['Main'].commands, {M.Command.Start: 'Repeat', M.Command.Hi: 'Transient'})
         self.assertDictEqual(STATES['Repeat'].commands, {M.Command.End: 'Main'})
-        self.assertEqual(STATES['Repeat'].repeating, M.Command.Echo)
-        self.assertDictEqual(STATES['Passing'].commands, {})
-        self.assertDictEqual(STATES['Passing'].passer, {'Command': M.Command.Passd, 'State': 'Repeat'})
+        self.assertEqual(STATES['Repeat'].cycle, M.Command.Echo)
+        self.assertDictEqual(STATES['Transient'].commands, {})
+        self.assertDictEqual(STATES['Transient'].transition, {'Command': M.Command.Passd, 'State': 'Repeat'})

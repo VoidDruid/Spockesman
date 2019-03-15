@@ -1,3 +1,4 @@
+from .exceptions import ConstantViolationException
 from spockesman.logger import log
 from spockesman.util.singleton import singleton
 
@@ -11,17 +12,23 @@ class InitialStateHolder:
 
     @property
     def name(self):
-        return self.__name
+        if self.__cls:
+            return self.__cls.__name__
 
     @property
     def cls(self):
         return self.__cls
+
+    @cls.setter
+    def cls(self, cls):
+        if self.__cls:
+            raise ConstantViolationException
+        self.__cls = cls
 
 
 INITIAL_STATE = InitialStateHolder()
 
 
 def initial(cls):
-    INITIAL_STATE.__dict__['_InitialStateHolder__name'] = cls.__name__
-    INITIAL_STATE.__dict__['_InitialStateHolder__cls'] = cls
+    INITIAL_STATE.cls = cls
     return cls

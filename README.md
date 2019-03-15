@@ -1,5 +1,7 @@
 # Spockesman 
-## Declarative state-machine for chat-bots
+### Declarative state-machine
+###### Mainly for chat-bots
+
 
 ![Logo](logo.jpeg)
 
