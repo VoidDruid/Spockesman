@@ -3,6 +3,7 @@ from .environment import STATES
 from .exceptions import ConstantViolationException
 
 
+# TODO: required attrs
 # TODO: check if constant attrs exist
 class StateMeta(type):
 

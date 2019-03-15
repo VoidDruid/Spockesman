@@ -6,3 +6,7 @@ from .cyclic_state import CyclicState
 from .state import WrongCommandException, NoHandlerException, State
 
 
+# TODO: generate config file from loaded state machine
+# TODO: setup linters
+# TODO: setup CI
+# TODO: setup code-coverage checks
