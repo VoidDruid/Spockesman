@@ -1,5 +1,5 @@
-import unittest
 import importlib
+import unittest
 
 M = importlib.reload(importlib.import_module('spockesman'))
 STATES = M.states.base.STATES
