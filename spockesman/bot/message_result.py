@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-from spockesman import AbstractResult
+from spockesman import ABCResult
 
 
 class ResourceType(Enum):
@@ -15,7 +15,7 @@ class Resource:
         self.type = resource_type
 
 
-class Message(AbstractResult):
+class Message(ABCResult):
     def __init__(self, resource, ui=None):
         self.resource = resource
         self.ui = ui

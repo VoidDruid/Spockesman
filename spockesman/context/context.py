@@ -4,7 +4,7 @@ from spockesman.states.base import INITIAL_STATE, STATES
 
 
 # TODO:
-#  - input to __input and metohds is_input, set_input
+#  - input to __input and methods is_input, set_input
 #  - custom data classes, store data object class
 #  - command to __command and property getter
 class Context:

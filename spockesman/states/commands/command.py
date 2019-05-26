@@ -2,20 +2,42 @@
 Defines commands enum of all available commands
 paired with their text representations that user can send.
 """
+from collections.abc import Iterable
 from enum import Enum, auto
 
 from spockesman.logger import log
 from spockesman.util.singleton import singleton
 
 
-# TODO: rewrite logic for triggers
+# TODO: rewrite logic for triggers, to accept *events*
 class CommandDescriptor:
-    def __init__(self, text, additional_triggers=None):
-        self.text = text
-        if additional_triggers is None:
-            self.triggers = {text}
-        else:
-            self.triggers = {*additional_triggers, text}
+    def __init__(self, name, triggers=None):
+        self.name = name
+        if not isinstance(triggers, Iterable) or isinstance(triggers, str):
+            triggers = [triggers]
+        self.triggers = triggers
+
+    def __repr__(self):
+        return f"<CommandDescriptor: {self.name}, triggers: {self.triggers}>"
+
+
+class CommandContainer:
+    def __init__(self, dictionary):
+        assert isinstance(dictionary, dict), 'Pass values as a dictionary'
+        self.__plain_dict = dictionary.copy()
+        self.__descriptors = list(self.__plain_dict.values())
+
+    def __getattr__(self, item):
+        try:
+            return self.__plain_dict[item]
+        except KeyError:
+            raise AttributeError(f'Command {item} not found')
+
+    def __getitem__(self, item):
+        return self.__plain_dict[item]
+
+    def __iter__(self):
+        return iter(self.__descriptors)
 
 
 @singleton
@@ -48,6 +70,7 @@ Command = Command()
 
 
 def generate_commands(config):
-    Command.inner_enum = Enum('Command', {key: (value if value else auto()) for key, value in config.items()},
-                              module=__name__)
+    Command.inner_enum = CommandContainer({
+        key: CommandDescriptor(key, value or None) for key, value in config.items()
+    })
     log.debug(f'Loaded commands. Commands are: {list(Command.inner_enum)}')

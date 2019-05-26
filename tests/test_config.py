@@ -15,9 +15,9 @@ class ConfigTest(unittest.TestCase):
         self.assertIn('End', M.Command)
         self.assertIn('Echo', M.Command)
         self.assertIn('Hi', M.Command)
-        self.assertEqual(M.Command.Start.value, '/start')
-        self.assertEqual(M.Command.End.value, '/end')
-        self.assertEqual(M.Command.Hi.value, '/hi')
+        self.assertListEqual(M.Command.Start.triggers, ['/start'])
+        self.assertEqual(M.Command.End.triggers, ['/end'])
+        self.assertEqual(M.Command.Hi.triggers, ['/hi'])
 
     def test_backend(self):
         self.assertTrue(M.context.backend.database.activated)

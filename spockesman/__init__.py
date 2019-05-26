@@ -3,6 +3,6 @@ from .config import load_config
 from .states import *
 from .context.context import Context
 from .context.backend import BackendNotLoaded
-from .results import AbstractResult
+from .results import ABCResult
 
 __version__ = '0.1'

@@ -1,1 +1,1 @@
-from .result import AbstractResult
+from .result import ABCResult

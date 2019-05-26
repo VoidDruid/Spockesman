@@ -29,7 +29,7 @@ class State(BaseState):
         else:
             # TODO: optimize search for command
             for command in Command:
-                if command.value == user_input:
+                if user_input in command.triggers:
                     self._context.command = command.name
                     break
             else:
@@ -40,7 +40,9 @@ class State(BaseState):
         return self.run(binding, user_input)
 
     def run(self, binding, user_input):
-        if not callable(binding) or issubclass(binding, BaseState):
+        if not callable(binding) or isinstance(binding, type):
+            if isinstance(binding, type) and not issubclass(binding, BaseState):
+                raise TypeError(f'Incorrect command binding type! Got type: {type(binding)}')
             return binding
         return binding(self._context, user_input)
 
