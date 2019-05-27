@@ -18,11 +18,11 @@ class RedisBackend(AbstractBackend):
         else:
             return Context(user_id)
 
-    def save(self, user_id, context):
-        self.__redis.set(user_id, json.dumps(context.to_dict()))
+    def save(self, context):
+        self.__redis.set(context.user_id, json.dumps(context.to_dict()))
 
-    def delete(self, *user_id):
-        self.__redis.delete(user_id)
+    def delete(self, *user_ids):
+        self.__redis.delete(user_ids)
 
     def delete_all(self):
         self.__redis.flushdb()

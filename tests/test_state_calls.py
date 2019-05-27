@@ -15,7 +15,7 @@ class StateCallsTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        M.load_config('tests/bot/config.yaml')
+        M.setup('tests/bot/config.yaml')
 
         @M.handler(M.Command.Start)
         def start(context, user_input):

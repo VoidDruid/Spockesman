@@ -52,5 +52,5 @@ def process(user_id, user_input, context=None, save=True):
         return None
     finally:
         if save:
-            database.save(user_id, context)
+            database.save(context)
     return result

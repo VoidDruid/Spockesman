@@ -9,7 +9,7 @@ class ContextTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        M.load_config('tests/bot/config.yaml')
+        M.setup('tests/bot/config.yaml')
 
     def test_context(self):
         context = M.Context(self.user_id)

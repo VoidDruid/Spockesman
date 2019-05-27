@@ -42,14 +42,15 @@ class State(BaseState):
     def run(self, binding, user_input):
         if not callable(binding) or isinstance(binding, type):
             if isinstance(binding, type) and not issubclass(binding, BaseState):
-                raise TypeError(f'Incorrect command binding type! Got type: {type(binding)}')
+                raise TypeError(f'Incorrect command binding type! Got type: {type(binding)} '
+                                f'for input: {user_input} in state {type(self).__name__}')
             return binding
         return binding(self._context, user_input)
 
     def transition(self, command):
         if command not in self.commands:
             raise WrongCommandException(
-                f"Command '{command}' is not availiable in current state"
+                f"Command '{command}' is not available in current state"
                 )
         if command not in COMMANDS:
             raise NoHandlerException(

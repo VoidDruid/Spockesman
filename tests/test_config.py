@@ -8,7 +8,7 @@ STATES = M.states.base.STATES
 class ConfigTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        M.load_config('tests/bot/config.yaml')
+        M.setup('tests/bot/config.yaml')
 
     def test_commands(self):
         self.assertIn('Start', M.Command)

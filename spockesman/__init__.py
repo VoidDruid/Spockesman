@@ -1,5 +1,5 @@
 from .processor import process
-from .config import load_config
+from .config import setup
 from .states import *
 from .context.context import Context
 from .context.backend import BackendNotLoaded
