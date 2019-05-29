@@ -156,5 +156,5 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
+tests/bot/token.py
 /main.py
