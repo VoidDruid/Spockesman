@@ -10,9 +10,10 @@ class CyclicState(State):
     will be automatically redirected to the specified command,
     unless it's another registered *Command* or in *GLOBAL_COMMANDS*
     """
-    cycle = None
+    is_meta = True
+    const = ('cycle',)
 
-    const = ('cycle', )
+    cycle = None
 
     def __init__(self, context):
         super().__init__(context)

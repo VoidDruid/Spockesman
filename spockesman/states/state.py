@@ -14,10 +14,10 @@ class NoHandlerException(Exception):
 @export('Basic')
 class State(BaseState):
     """Class representing general user state."""
-    commands = {}
-    default = None
+    is_meta = True
+    const = ('default',)
 
-    const = ('commands', 'default')
+    default = None
 
     def __init__(self, context):
         self._context = context

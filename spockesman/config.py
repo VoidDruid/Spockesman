@@ -6,6 +6,7 @@ from .context.backend import database
 from .logger import log
 from .states import META_STATES, Command
 from .states.commands.command import generate_commands
+from .util.string import upper_and_separate
 
 
 def command_parser(item):
@@ -41,7 +42,10 @@ class Configuration:
     @classmethod
     def from_module(cls, module):
         self = cls()
-        # TODO: load config from module
+        self.commands = getattr(module, upper_and_separate(COMMANDS_SECTION))
+        self.context_backend = getattr(module, upper_and_separate(CONTEXT_BACKEND_SECTION))
+        self.context_backend_type = getattr(module, upper_and_separate(CONTEXT_BACKEND_SECTION))[TYPE_SECTION]
+        self.states = getattr(module, upper_and_separate(STATES_SECTION), None)
         return self
 
 
@@ -53,13 +57,17 @@ def config_from_object(obj):
     return dispatcher[type(obj)](obj)
 
 
+def is_module_path(path):  # TODO, FIXME: hacky way to check if path is a pat to module. Refactor!
+    return '.' in path
+
+
 def setup(config_pointer):
     log.debug(f"Trying to read config from '{config_pointer}'")
     if isinstance(config_pointer, str):
         if config_pointer.endswith('.yaml'):
             with open(config_pointer, 'r') as config_file:
                 data = yaml.load(config_file)
-        elif config_pointer.endswith('.py'):
+        elif is_module_path(config_pointer):
             data = importlib.import_module(config_pointer)
         else:
             raise TypeError('Only .py and .yaml are supported config formats')
@@ -72,7 +80,7 @@ def setup(config_pointer):
     generate_commands(config.commands)
     database.load_backend(config.context_backend_type, config.context_backend)
     if config.states:
-         generate_states(config.states)
+        generate_states(config.states)
 
 
 def generate_states(states):
@@ -86,7 +94,13 @@ def generate_states(states):
                 continue
             else:
                 attr_dict[key.lower()] = parse_item(item)
-        type(META_STATES[config[TYPE_SECTION]])(name, (META_STATES[config[TYPE_SECTION]],), attr_dict)
+        state_type = config[TYPE_SECTION]
+        if is_module_path(state_type):  # TODO, FIXME: hacky way to check if requested metastate is in plugin. Refactor!
+            dot_pos = state_type.rfind('.')
+            metastate = getattr(importlib.import_module(state_type[:dot_pos]), state_type[dot_pos:])
+        else:
+            metastate = META_STATES[state_type]
+        type(metastate)(name, (metastate,), attr_dict)
 
 
 def parse_item(item, parser=command_parser, parse_list=False):
@@ -106,14 +120,18 @@ def parse_item(item, parser=command_parser, parse_list=False):
     for key, value in item.items():
         new_value = parse_item(value, parser, parse_list=True)
         if isinstance(new_value, list):
-            new_value = attempt_join(new_value)
+            new_value = attempt_dict_join(new_value)
         result[key] = new_value
     if isinstance(result, dict) and len(result) == 1 and VALUE_SECTION in result:
         return result[VALUE_SECTION]
     return result
 
 
-def attempt_join(attr_list):
+def attempt_dict_join(attr_list):
+    """
+    Merges list of 1-element or empty dicts into one dict.
+    If any element is not 0 or 1 elements long or not dict - returns unmodified argument
+    """
     for item in attr_list:
         if not isinstance(item, dict) or not len(item) in (0, 1):
             break

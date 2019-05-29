@@ -22,7 +22,10 @@ class Database:
         return bool(self.active)
 
     def load_backend(self, name, config):
-        back = import_module('.'+name, package=__name__)
+        try:
+            back = import_module('.'+name, package=__name__)
+        except ImportError:  # load plugged-in module
+            back = import_module(name)  # TODO: support plugins in format spockesman.backend.*
         self.active = back.activate(config)
 
     def load(self, user_id):

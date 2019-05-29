@@ -3,14 +3,13 @@
 from abc import abstractmethod
 
 from .base.metas import AbstractStateMeta, ConstantViolationException
-from .metastates import ignore
 
 
-@ignore
 class BaseState(metaclass=AbstractStateMeta):
     """Class representing general user state."""
-    commands: {}
-    const: ()
+    const = ('commands', 'is_meta')
+    is_meta = True
+    commands = {}
 
     @classmethod
     def is_constant_attr(cls, name):

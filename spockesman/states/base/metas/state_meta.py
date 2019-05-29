@@ -4,7 +4,7 @@ from .exceptions import ConstantViolationException
 
 
 # TODO: required attrs
-# TODO: check if constant attrs exist
+# TODO: implement check if constant attrs exist
 class StateMeta(type):
 
     def __setattr__(self, name, value):
@@ -14,6 +14,7 @@ class StateMeta(type):
 
     def __new__(mcs, name, bases, dct):
         const = dct.get(CONST_PUBLIC_NAME)
+        is_meta = dct.get(IS_META_NAME, False)  # it will probably be useful later
         if not const:
             const = tuple()
         if bases:
@@ -22,5 +23,6 @@ class StateMeta(type):
             last_const = tuple()
         dct[CONST_PRIVATE_NAME] = frozenset((*const, *last_const))
         cls = super().__new__(mcs, name, bases, dct)
-        STATES[name] = cls
+        if not is_meta:
+            STATES[name] = cls
         return cls
