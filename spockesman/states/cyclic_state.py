@@ -1,17 +1,19 @@
+from .commands import COMMANDS
 from .state import State, WrongCommandException
 from .metastates import export
 
 
-@export('Awaiting')
-class AwaitingState(State):
+@export('Cyclic')
+class CyclicState(State):
     """
     All input this state gets
     will be automatically redirected to the specified command,
     unless it's another registered *Command* or in *GLOBAL_COMMANDS*
     """
-    awaiting = None
+    is_meta = True
+    const = ('cycle',)
 
-    const = ('awaiting', )
+    cycle = None
 
     def __init__(self, context):
         super().__init__(context)
@@ -21,4 +23,4 @@ class AwaitingState(State):
         try:
             return super().__call__(text)
         except WrongCommandException:
-            return self.transition(self.__awaiting)(self._context, text)
+            return COMMANDS[self.cycle](self.__class__)(self._context, text)

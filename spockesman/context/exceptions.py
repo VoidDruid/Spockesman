@@ -1,0 +1,2 @@
+class NotSerializableDataObject(Exception):
+    pass

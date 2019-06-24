@@ -156,7 +156,5 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
-config.yaml
-main.py
-bot.py
+tests/bot/token.py
+/main.py

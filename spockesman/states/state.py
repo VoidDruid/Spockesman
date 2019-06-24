@@ -14,39 +14,49 @@ class NoHandlerException(Exception):
 @export('Basic')
 class State(BaseState):
     """Class representing general user state."""
-    commands = {}
+    is_meta = True
+    const = ('default',)
 
-    const = ('commands',)
+    default = None
 
     def __init__(self, context):
         self._context = context
 
     def __call__(self, *args, **kwargs):
-        text = args[0]
+        user_input = args[0]
         if self._context.input:
             command = Command[self._context.command]
         else:
+            # TODO: optimize search for command
             for command in Command:
-                if command.value == text:
+                if user_input in command.triggers:
                     self._context.command = command.name
                     break
             else:
-                raise WrongCommandException(f'No such command: {text}')
-        executor = GLOBAL_COMMANDS.get(command, None)
-        if not executor:
-            executor = self.transition(command)
-        return executor(self._context, text)
+                raise WrongCommandException(f'No such command: {user_input}')
+        binding = GLOBAL_COMMANDS.get(command, None)
+        if not binding:
+            binding = self.transition(command)
+        return self.run(binding, user_input)
+
+    def run(self, binding, user_input):
+        if not callable(binding) or isinstance(binding, type):
+            if isinstance(binding, type) and not issubclass(binding, BaseState):
+                raise TypeError(f'Incorrect command binding type! Got type: {type(binding)} '
+                                f'for input: {user_input} in state {type(self).__name__}')
+            return binding
+        return binding(self._context, user_input)
 
     def transition(self, command):
-        if command not in self.__commands:
+        if command not in self.commands:
             raise WrongCommandException(
-                f"Command '{command}' is not availiable in current state"
+                f"Command '{command}' is not available in current state"
                 )
         if command not in COMMANDS:
             raise NoHandlerException(
                 f"No handler registered for command '{command}'"
             )
-        return COMMANDS[command](self.__commands[command])
+        return COMMANDS[command](self.commands[command])
 
     def get_context(self):
         return self._context

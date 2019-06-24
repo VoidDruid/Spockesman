@@ -9,11 +9,11 @@ class AbstractBackend(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def save(self, user_id, context):
+    def save(self, context):
         pass
 
     @abstractmethod
-    def delete(self, *user_id):
+    def delete(self, *user_ids):
         pass
 
     @abstractmethod

@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     long_description=open(join(dirname(__file__), 'README.txt')).read(),
     install_requires=[
-        'redis==3.0.1',
-        'PyYAML==4.2b1'
+        'redis>=3.2',
+        'PyYAML>=4.2b1'
     ]
 )

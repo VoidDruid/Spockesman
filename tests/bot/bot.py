@@ -7,6 +7,8 @@ from telegram.ext.dispatcher import Dispatcher, run_async
 
 from spockesman import process
 
+from .token import TOKEN
+
 log = logging.getLogger(__name__)
 message_queue = Queue()
 
@@ -24,7 +26,7 @@ class TelegramBot:
         self.create_bot()
 
     def create_bot(self):
-        self.__updater = Updater(token='653570948:AAHY7epbKTYsO5ajIlLR3kBMZZ-6LNLnFr0')
+        self.__updater = Updater(token=TOKEN)
         self.__dispatcher = self.__updater.dispatcher
         self.__dispatcher.add_handler(MessageHandler(Filters.all, self.text_handler))
         self.__dispatcher.add_handler(CallbackQueryHandler(self.inline_handler))

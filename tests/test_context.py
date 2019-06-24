@@ -1,7 +1,7 @@
-import unittest
 import importlib
+import unittest
 
-M = importlib.import_module('spockesman')
+M = importlib.reload(importlib.import_module('spockesman'))
 
 
 class ContextTest(unittest.TestCase):
@@ -9,7 +9,7 @@ class ContextTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        M.load_config('tests/bot/config.yaml')
+        M.setup('tests/bot/config.yaml')
 
     def test_context(self):
         context = M.Context(self.user_id)
