@@ -6,6 +6,8 @@ from ...logger import log
 from ..context import Context
 from .abstract import AbstractBackend
 
+# TODO: support url connection
+
 
 class RedisBackend(AbstractBackend):
     def __init__(self, host, port, db):
@@ -15,8 +17,7 @@ class RedisBackend(AbstractBackend):
         data = self.__redis.get(user_id)
         if data:
             return Context.from_dict(json.loads(data))
-        else:
-            return Context(user_id)
+        return None
 
     def save(self, context):
         self.__redis.set(context.user_id, json.dumps(context.to_dict()))

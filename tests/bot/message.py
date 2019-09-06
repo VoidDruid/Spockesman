@@ -1,6 +1,9 @@
 from enum import Enum, auto
 
-class Message:
+from spockesman import ABCResult
+
+
+class Message(ABCResult):
     def __init__(self, text=None, resource=None, ui=None):
         assert text or resource or ui, 'Provide content for message'
         self.text = text

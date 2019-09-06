@@ -158,3 +158,4 @@ venv.bak/
 .mypy_cache/
 tests/bot/token.py
 /main.py
+upload_package.cmd

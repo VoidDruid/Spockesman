@@ -1,9 +1,7 @@
 from .commands import COMMANDS
-from .state import State, WrongCommandException
-from .metastates import export
+from .state import State, InvalidCommandException
 
 
-@export('Cyclic')
 class CyclicState(State):
     """
     All input this state gets
@@ -11,7 +9,8 @@ class CyclicState(State):
     unless it's another registered *Command* or in *GLOBAL_COMMANDS*
     """
     is_meta = True
-    const = ('cycle',)
+    name = 'Cyclic'
+    const = 'cycle'
 
     cycle = None
 
@@ -22,5 +21,5 @@ class CyclicState(State):
         text = args[0]
         try:
             return super().__call__(text)
-        except WrongCommandException:
+        except InvalidCommandException:
             return COMMANDS[self.cycle](self.__class__)(self._context, text)

@@ -1,5 +1,7 @@
+from collections import Iterable
+
 from .const import *
-from .environment import STATES
+from .environment import STATES, META_STATES
 from .exceptions import ConstantViolationException
 
 
@@ -15,14 +17,28 @@ class StateMeta(type):
     def __new__(mcs, name, bases, dct):
         const = dct.get(CONST_PUBLIC_NAME)
         is_meta = dct.get(IS_META_NAME, False)  # it will probably be useful later
-        if not const:
+        state_name = dct.get(NAME_FIELD_NAME, None)
+        if state_name is None:
+            state_name = name
+            dct[NAME_FIELD_NAME] = name
+
+        if not const:  # if const attr for class is empty, create empty tuple
             const = tuple()
-        if bases:
+        else:
+            if isinstance(const, Iterable):
+                if isinstance(const, str):
+                    const = (const,)
+            else:
+                raise TypeError('<const> class attribute must be either an iterable of strings or a string')
+        if bases:  # get last parents const
             last_const = bases[0].__dict__[CONST_PRIVATE_NAME]
         else:
             last_const = tuple()
-        dct[CONST_PRIVATE_NAME] = frozenset((*const, *last_const))
-        cls = super().__new__(mcs, name, bases, dct)
-        if not is_meta:
-            STATES[name] = cls
+        dct[CONST_PRIVATE_NAME] = frozenset((*const, *last_const))  # join consts
+
+        cls = super().__new__(mcs, name, bases, dct)  # create type
+        if is_meta:  # save it
+            META_STATES[state_name] = cls
+        else:
+            STATES[state_name] = cls
         return cls

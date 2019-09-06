@@ -1,39 +1,46 @@
 from tests.bot.bot import bot
-from spockesman import CyclicState, Command, State, global_command, handler, initial, setup
+from tests.bot.message import Message
+import tests.bot.config as config
 
-setup('tests/bot/config.yaml')
+from spockesman import CyclicState, Command, State, global_command, handler, initial, setup, Context
 
-
-@handler(Command.Start)
-def start(context, user_input):
-    return 'Привет!', None
+setup(config)
 
 
 @handler(Command.Echo)
 def echo(context, user_input):
-    return user_input, None
+    return Message(user_input)
+
+
+@handler(Command.Start)
+def start(context, user_input):
+    return Message('Привет!')
 
 
 @handler(Command.End)
-def end(context, user_input):
-    return 'Пока!', None
+def end(context: Context, user_input):
+    return Message('Пока!')
 
 
 @global_command(Command.Hi)
 def hi(context, user_input):
-    return 'Hello!', None
+    return Message('Hello!')
 
 
 class MainState(CyclicState):
-    Cyclic = Command.Echo
+    cycle = Command.Echo
     commands = {
-            Command.Echo: 'MainState',
-            Command.End: 'InitialState'
+            Command.End: 'InitialState',
         }
 
 
 @initial
 class InitialState(State):
+    default = Message('Добро пожаловать в бота!')
     commands = {
-            Command.Start: 'MainState'
+            Command.Start: 'MainState',
         }
+
+
+print('STARTING!')
+bot.start_method()

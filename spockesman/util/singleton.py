@@ -1,13 +1,13 @@
 """Singleton implementation."""
 
 
-def singleton(class_):
+def singleton(klass):
     """Singleton decorator for classes."""
     instances = {}
 
     def get_instance(*args, **kwargs):
         """Returns single existing instance of the class."""
-        if class_ not in instances:
-            instances[class_] = class_(*args, **kwargs)
-        return instances[class_]
+        if klass not in instances:
+            instances[klass] = klass(*args, **kwargs)
+        return instances[klass]
     return get_instance

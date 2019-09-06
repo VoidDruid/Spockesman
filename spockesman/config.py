@@ -4,7 +4,8 @@ from types import ModuleType
 
 from .context.backend import database
 from .logger import log
-from .states import META_STATES, Command
+from .states import Command
+from .states.base import META_STATES
 from .states.commands.command import generate_commands
 from .util.string import upper_and_separate
 
@@ -57,7 +58,7 @@ def config_from_object(obj):
     return dispatcher[type(obj)](obj)
 
 
-def is_module_path(path):  # TODO, FIXME: hacky way to check if path is a pat to module. Refactor!
+def is_module_path(path):  # TODO, FIXME: hacky way to check if path is a path to module. Refactor!
     return '.' in path
 
 

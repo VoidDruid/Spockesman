@@ -22,7 +22,7 @@ class Context:
     def to_dict(self):
         if isinstance(self.data, dict) or isinstance(self.data, list):
             data_dump = self.data
-        #elif hasattr(self.data, 'to_dict'):
+        #elif hasattr(self.data, 'to_dict'):  # FIXME, for now left as-is
         #    data_dump = self.data.to_dict()
         return {
             'state': self.__state,

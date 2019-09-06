@@ -1,9 +1,8 @@
 from .commands import Command, GLOBAL_COMMANDS, COMMANDS
 from .base_state import BaseState
-from .metastates import export
 
 
-class WrongCommandException(Exception):
+class InvalidCommandException(Exception):
     pass
 
 
@@ -11,13 +10,10 @@ class NoHandlerException(Exception):
     pass
 
 
-@export('Basic')
 class State(BaseState):
     """Class representing general user state."""
     is_meta = True
-    const = ('default',)
-
-    default = None
+    name = 'Basic'
 
     def __init__(self, context):
         self._context = context
@@ -33,7 +29,7 @@ class State(BaseState):
                     self._context.command = command.name
                     break
             else:
-                raise WrongCommandException(f'No such command: {user_input}')
+                raise InvalidCommandException(f'No such command: {user_input}')
         binding = GLOBAL_COMMANDS.get(command, None)
         if not binding:
             binding = self.transition(command)
@@ -49,7 +45,7 @@ class State(BaseState):
 
     def transition(self, command):
         if command not in self.commands:
-            raise WrongCommandException(
+            raise InvalidCommandException(
                 f"Command '{command}' is not available in current state"
                 )
         if command not in COMMANDS:

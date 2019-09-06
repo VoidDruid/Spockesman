@@ -61,9 +61,9 @@ class TelegramBot:
             return
         try:
             log.info(f"[BOT] Processing input '{text}' from '{chat_id}'")
-            reply, ui = process(chat_id, text)
-            if reply or ui:
-                message_queue.put((chat_id, reply, ui))
+            reply = process(chat_id, text)
+            if reply:
+                message_queue.put((chat_id, reply))
         except Exception as e:
             log.exception(e)
         finally:
@@ -73,9 +73,9 @@ class TelegramBot:
     def process_messages(self):
         while True:
             log.info(f"[MSG_THREAD {current_thread().ident}] Getting next message")
-            chat_id, text, ui = message_queue.get()
+            chat_id, reply = message_queue.get()
             try:
-                self.__updater.bot.send_message(chat_id=chat_id, text=text, reply_markup=ui)
+                self.__updater.bot.send_message(chat_id=chat_id, text=reply.text, reply_markup=reply.ui)
             except Exception as e:
                 log.exception(e)
             log.info(f"[MSG_THREAD {current_thread().ident}] Message for '{chat_id}' finished")

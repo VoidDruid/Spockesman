@@ -3,7 +3,7 @@ from spockesman.logger import log
 from spockesman.util.singleton import singleton
 
 STATES = {}
-
+META_STATES = {}
 
 @singleton
 class InitialStateHolder:
