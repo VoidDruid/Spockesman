@@ -9,7 +9,7 @@ setuptools.setup(
     version=spockesman.__version__,
     author='Igor Beschastnov',
     description='Declarative state-machine, mainly for chat-bots',
-    long_description=open(join(dirname(__file__), 'README.txt')).read(),
+    long_description=open(join(dirname(__file__), 'README.md')).read(),
     install_requires=[
         'redis>=3.2',
         'PyYAML>=4.2b1'
