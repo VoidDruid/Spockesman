@@ -6,7 +6,7 @@ Commands:
   Passd:
   Glob: /lol
 ContextBackend:
-  Type: redis
+  Type: redis_backend
   Host: localhost
   Port: 6379
   User:

@@ -41,27 +41,27 @@ class StateCallsTest(unittest.TestCase):
         self.context = M.Context(self.user_id)
 
     def test_basic_state_f(self):
-        self.assertEqual(STATES['Main'](self.context)('/start'), self.hello_ru)
+        self.assertEqual(STATES['Main'](self.context)('/start', ()), self.hello_ru)
         self.assertEqual(type(self.context.state).__name__, 'Repeat')
 
     def test_basic_state_s(self):
-        self.assertEqual(STATES['Main'](self.context)('/hi'), self.hello_eng)
+        self.assertEqual(STATES['Main'](self.context)('/hi', ()), self.hello_eng)
         self.assertEqual(type(self.context.state).__name__, 'Transient')
 
     def test_repeat_state(self):
         self.context.state = 'Repeat'
         self.assertEqual(self.context.state.cycle, M.Command.Echo)
-        self.assertEqual(STATES['Repeat'](self.context)('lalala'), ('lalala', None))
+        self.assertEqual(STATES['Repeat'](self.context)('lalala', ()), ('lalala', None))
         self.assertEqual(type(self.context.state).__name__, 'Repeat')
 
     def test_exit_repeat_state(self):
         self.context.state = 'Repeat'
         self.assertIn(M.Command.End, self.context.state.commands)
-        self.assertEqual(STATES['Repeat'](self.context)('/end'), self.bye_ru)
+        self.assertEqual(STATES['Repeat'](self.context)('/end', ()), self.bye_ru)
         self.assertEqual(type(self.context.state).__name__, 'Main')
 
     def test_pass_state(self):
         self.context.state = 'Transient'
         self.assertTrue(hasattr(self.context.state, 'transition'))
-        self.assertEqual(STATES['Transient'](self.context)('lala'), self.pass_ru)
+        self.assertEqual(STATES['Transient'](self.context)('lala', ()), self.pass_ru)
         self.assertEqual(type(self.context.state).__name__, 'Repeat')

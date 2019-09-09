@@ -8,20 +8,20 @@ STATES = M.states.base.STATES
 class ConfigTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        M.setup('tests.bot.config')
+        M.setup('tests/bot/config.yaml')
 
     def test_commands(self):
         self.assertIn('Start', M.Command)
         self.assertIn('End', M.Command)
         self.assertIn('Echo', M.Command)
         self.assertIn('Hi', M.Command)
-        self.assertListEqual(M.Command.Start.triggers, ['/start'])
-        self.assertEqual(M.Command.End.triggers, ['/end'])
-        self.assertEqual(M.Command.Hi.triggers, ['/hi'])
+        self.assertListEqual(M.Command.Start.triggers.all, ['/start'])
+        self.assertEqual(M.Command.End.triggers.all, ['/end'])
+        self.assertEqual(M.Command.Hi.triggers.all, ['/hi'])
 
     def test_backend(self):
         self.assertTrue(M.context.backend.database.activated)
-        self.assertIsInstance(M.context.backend.database.active, M.context.backend.redis.RedisBackend)
+        self.assertIsInstance(M.context.backend.database.active, M.context.backend.redis_backend.RedisBackend)
 
     def test_states(self):
         self.assertIn('Main', STATES)

@@ -67,7 +67,7 @@ def setup(config_pointer):
     if isinstance(config_pointer, str):
         if config_pointer.endswith('.yaml'):
             with open(config_pointer, 'r') as config_file:
-                data = yaml.load(config_file)
+                data = yaml.full_load(config_file)
         elif is_module_path(config_pointer):
             data = importlib.import_module(config_pointer)
         else:
