@@ -1,3 +1,5 @@
+from collections import Iterable
+
 from .results.result import ABCResult
 from .states.base_state import BaseState
 from .context import Context
@@ -21,12 +23,12 @@ def parse_result(result, context, user_input):
             raise TypeError(f"Got string {result} as result. Strings are only accepted if it's a state's name")
         result = state
     # if we got state, return its default
-    if issubclass(result, BaseState):
+    if isinstance(result, type) and issubclass(result, BaseState):
         context.state = result.name
         return check_callable(result.default, context, user_input)
     elif not result or isinstance(result, ABCResult):
         return result
-    elif isinstance(result, list):
+    elif isinstance(result, Iterable):
         return [parse_result(part, context, user_input) for part in result]
     # if we received callable, call it assuming the interface func(context, user_input) and parse its result
     elif callable(result):

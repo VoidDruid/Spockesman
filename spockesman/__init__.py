@@ -5,7 +5,7 @@ from .context import Context
 from .context.backend import BackendNotLoaded
 from .results import ABCResult
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 # TODO: refactor relative imports, change everything to absolute imports
 # TODO: move to pytest from unittest
