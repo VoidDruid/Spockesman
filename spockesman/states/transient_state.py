@@ -13,8 +13,8 @@ class TransientState(State):
     }
 
     def __call__(self, *args, **kwargs):
-        text = args[0]
+        user_input, call_args = args[:2]
         try:
-            return super().__call__(text)
+            return super().__call__(user_input, call_args)
         except InvalidCommandException:
-            return COMMANDS[self.transition['Command']](self.transition['State'])(self._context, text)
+            return COMMANDS[self.transition['Command']](self.transition['State'])(self._context, user_input, *call_args)

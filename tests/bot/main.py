@@ -8,23 +8,23 @@ setup(config)
 
 
 @handler(Command.Echo)
-def echo(context, user_input):
-    return Message(user_input)
+def echo(context, user_input, t):
+    return Message(user_input + t)
 
 
 @handler(Command.Start)
-def start(context, user_input):
-    return Message('Привет!')
+def start(context, user_input, t):
+    return Message('Привет!' + t)
 
 
 @handler(Command.End)
-def end(context: Context, user_input):
-    return Message('Пока!')
+def end(context: Context, user_input, t):
+    return Message('Пока!' + t)
 
 
 @global_command(Command.Hi)
-def hi(context, user_input):
-    return Message('Hello!')
+def hi(context, user_input, t):
+    return Message('Hello!' + t)
 
 
 class MainState(CyclicState):

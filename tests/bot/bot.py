@@ -61,7 +61,7 @@ class TelegramBot:
             return
         try:
             log.info(f"[BOT] Processing input '{text}' from '{chat_id}'")
-            reply = process(chat_id, text)
+            reply = process(chat_id, text, '1')
             if reply:
                 message_queue.put((chat_id, reply))
         except Exception as e:

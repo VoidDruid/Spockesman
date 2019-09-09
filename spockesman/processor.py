@@ -34,7 +34,7 @@ def parse_result(result, context, user_input):
     raise TypeError(f"Value {result} returned by state call is not valid type : {type(result)}")
 
 
-def process(user_id, user_input, context=None, save=True):
+def process(user_id, user_input, *call_args, context=None, save=True):
     log.debug(f"Processing input: '{user_input}', user: '{user_id}'")
     if not context:
         try:
@@ -48,7 +48,7 @@ def process(user_id, user_input, context=None, save=True):
             context = Context(user_id)
             result = context.state.default
         else:
-            result = context.state(user_input)
+            result = context.state(user_input, call_args)
         final_result = parse_result(result, context, user_input)
     except TypeError:
         raise TypeError(f"Tried to process input '{user_input}', user: '{user_id}', "
