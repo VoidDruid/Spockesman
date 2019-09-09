@@ -1,11 +1,13 @@
-import setuptools
 from os.path import dirname, join
+
+import setuptools
+from setuptools import find_packages
 
 import spockesman
 
 setuptools.setup(
     name='Spockesman',
-    packages=['spockesman'],
+    packages=find_packages(exclude=["tests.*", "tests"]),
     version=spockesman.__version__,
     author='Igor Beschastnov',
     description='Declarative state-machine, mainly for chat-bots',
