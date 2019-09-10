@@ -18,6 +18,5 @@ def reload():
 class BaseTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
-        if hasattr(cls, 'M'):
-            if cls.M.context.backend.database.active:
-                cls.M.context.backend.database.delete_all()
+        if hasattr(cls, 'M') and cls.M.context.backend.database.active:
+            cls.M.context.backend.database.delete_all()
