@@ -5,7 +5,6 @@ paired with their text representations that user can send.
 import random
 from collections.abc import Iterable
 from copy import copy, deepcopy
-from enum import Enum, auto
 
 from spockesman.logger import log
 from spockesman.util.singleton import singleton
@@ -37,6 +36,9 @@ class Proxy:
 
 # TODO: rewrite logic for triggers, to accept *events*
 class CommandDescriptor:
+    """
+    Name of the command and user input that should trigger it
+    """
     def __init__(self, name, triggers=None):
         self.name = name
         if not isinstance(triggers, Iterable) or isinstance(triggers, str):
@@ -56,6 +58,9 @@ class CommandDescriptor:
 
 
 class CommandContainer:
+    """
+    Storage for pairs 'CommandName': CommandDescriptor
+    """
     def __init__(self, dictionary):
         assert isinstance(dictionary, dict), 'Pass values as a dictionary'
         self.__plain_dict = dictionary.copy()
@@ -77,9 +82,8 @@ class CommandContainer:
 @singleton
 class Command:
     """
-    User input that should trigger command
-    and button names if command is intended to be a button
-    Also, allows us to refer to commands by Commands.X, instead of "command".
+    Enum-like class, that allows us to refer to commands by Commands.X, instead of Command['command'],
+    iterate over them, check for 'in', etc.
     """
     inner_enum = {}
 
@@ -104,6 +108,11 @@ Command = Command()
 
 
 def generate_commands(config):
+    """
+    Generate command's enum from config
+    :param config: dict, command's configuration
+    :return: None
+    """
     Command.inner_enum = CommandContainer({
         key: CommandDescriptor(key, value or None) for key, value in config.items()
     })

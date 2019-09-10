@@ -7,7 +7,7 @@ from telegram.ext.dispatcher import Dispatcher, run_async
 
 from spockesman import process
 
-from .token import TOKEN
+from .token import TOKEN  # provide your own telegram token
 
 log = logging.getLogger(__name__)
 message_queue = Queue()
@@ -61,7 +61,7 @@ class TelegramBot:
             return
         try:
             log.info(f"[BOT] Processing input '{text}' from '{chat_id}'")
-            reply = process(chat_id, text, '1')
+            reply = process(chat_id, text)
             if reply:
                 message_queue.put((chat_id, reply))
         except Exception as e:

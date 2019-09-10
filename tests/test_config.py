@@ -1,36 +1,39 @@
 import importlib
 import unittest
 
-M = importlib.reload(importlib.import_module('spockesman'))
-STATES = M.states.base.STATES
+from .util import reload, BaseTestCase
 
 
-class ConfigTest(unittest.TestCase):
+class ConfigTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
-        M.setup('tests/bot/config.yaml')
+        cls.M = reload()
+        cls.STATES = cls.M.states.base.STATES
+        cls.M.setup('tests/config.yaml')
 
     def test_commands(self):
-        self.assertIn('Start', M.Command)
-        self.assertIn('End', M.Command)
-        self.assertIn('Echo', M.Command)
-        self.assertIn('Hi', M.Command)
-        self.assertListEqual(M.Command.Start.triggers.all, ['/start'])
-        self.assertEqual(M.Command.End.triggers.all, ['/end'])
-        self.assertEqual(M.Command.Hi.triggers.all, ['/hi'])
+        self.assertIn('Start', self.M.Command)
+        self.assertIn('End', self.M.Command)
+        self.assertIn('Echo', self.M.Command)
+        self.assertIn('Hi', self.M.Command)
+        self.assertListEqual(self.M.Command.Start.triggers.all, ['/start'])
+        self.assertEqual(self.M.Command.End.triggers.all, ['/end'])
+        self.assertEqual(self.M.Command.Hi.triggers.all, ['/hi'])
 
     def test_backend(self):
-        self.assertTrue(M.context.backend.database.activated)
-        self.assertIsInstance(M.context.backend.database.active, M.context.backend.redis_backend.RedisBackend)
+        self.assertTrue(self.M.context.backend.database.activated)
+        self.assertIsInstance(self.M.context.backend.database.active,
+                              self.M.context.backend.sqlite_backend.SqliteBackend)
 
     def test_states(self):
-        self.assertIn('Main', STATES)
-        self.assertIn('Repeat', STATES)
-        self.assertIn('Transient', STATES)
+        self.assertIn('Main', self.STATES)
+        self.assertIn('Repeat', self.STATES)
+        self.assertIn('Transient', self.STATES)
 
     def test_states_config(self):
-        self.assertDictEqual(STATES['Main'].commands, {M.Command.Start: 'Repeat', M.Command.Hi: 'Transient'})
-        self.assertDictEqual(STATES['Repeat'].commands, {M.Command.End: 'Main'})
-        self.assertEqual(STATES['Repeat'].cycle, M.Command.Echo)
-        self.assertDictEqual(STATES['Transient'].commands, {})
-        self.assertDictEqual(STATES['Transient'].transition, {'Command': M.Command.Passd, 'State': 'Repeat'})
+        self.assertDictEqual(self.STATES['Main'].commands, {self.M.Command.Start: 'Repeat',
+                                                            self.M.Command.Hi: 'Transient'})
+        self.assertDictEqual(self.STATES['Repeat'].commands, {self.M.Command.End: 'Main'})
+        self.assertEqual(self.STATES['Repeat'].cycle, self.M.Command.Echo)
+        self.assertDictEqual(self.STATES['Transient'].commands, {})
+        self.assertDictEqual(self.STATES['Transient'].transition, {'Command': self.M.Command.Passd, 'State': 'Repeat'})

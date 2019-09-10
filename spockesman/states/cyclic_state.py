@@ -1,12 +1,11 @@
-from .commands import COMMANDS
-from .state import State, InvalidCommandException
+from spockesman.states.commands import COMMANDS
+from spockesman.states.state import State, InvalidCommandException
 
 
 class CyclicState(State):
     """
-    All input this state gets
-    will be automatically redirected to the specified command,
-    unless it's another registered *Command* or in *GLOBAL_COMMANDS*
+    Metastate, that always calls handler of the same command,
+    if it can't find another handler for input in self.commands or global commands
     """
     is_meta = True
     name = 'Cyclic'

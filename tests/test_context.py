@@ -1,18 +1,18 @@
-import importlib
 import unittest
 
-M = importlib.reload(importlib.import_module('spockesman'))
+from .util import reload, BaseTestCase
 
 
-class ContextTest(unittest.TestCase):
+class ContextTest(BaseTestCase):
     user_id = '12345'
 
     @classmethod
     def setUpClass(cls):
-        M.setup('tests/bot/config.yaml')
+        cls.M = reload()
+        cls.M.setup('tests/config.yaml')
 
     def test_context(self):
-        context = M.Context(self.user_id)
+        context = self.M.Context(self.user_id)
         self.assertDictEqual({
             'state': None,
             'input': False,
@@ -25,15 +25,15 @@ class ContextTest(unittest.TestCase):
         class TestUnregisteredState:
             def __init__(self, context_):
                 pass
-        context = M.Context(self.user_id, TestUnregisteredState)
+        context = self.M.Context(self.user_id, TestUnregisteredState)
         with self.assertRaises(KeyError):
             state = context.state
 
     def test_context_state(self):
-        class TestState(M.State):
+        class TestState(self.M.State):
             def __init__(self, context_):
                 pass
-        context = M.Context(self.user_id, TestState)
+        context = self.M.Context(self.user_id, TestState)
         self.assertTrue(isinstance(context.state, TestState))
         self.assertDictEqual({
             'state': 'TestState',
@@ -44,11 +44,11 @@ class ContextTest(unittest.TestCase):
         }, context.to_dict())
 
     def test_context_initial_state(self):
-        @M.initial
-        class TestInitialState(M.State):
+        @self.M.initial
+        class TestInitialState(self.M.State):
             def __init__(self, context_):
                 pass
-        context = M.Context(self.user_id)
+        context = self.M.Context(self.user_id)
         self.assertTrue(isinstance(context.state, TestInitialState))
         self.assertDictEqual({
             'state': 'TestInitialState',

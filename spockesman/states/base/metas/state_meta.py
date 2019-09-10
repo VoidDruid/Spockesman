@@ -1,13 +1,14 @@
 from collections import Iterable
 
-from .const import *
-from .environment import STATES, META_STATES
-from .exceptions import ConstantViolationException
+from spockesman.states.base.metas.const import *
+from spockesman.states.base.metas.environment import STATES, META_STATES
+from spockesman.states.base.metas.exceptions import ConstantViolationException
 
 
 # TODO: required attrs
 # TODO: implement check if constant attrs exist
 class StateMeta(type):
+    """Metaclass for all states, implements logic that joins them into state graph"""
 
     def __setattr__(self, name, value):
         if name in self.__dict__.get(CONST_PRIVATE_NAME, {}):

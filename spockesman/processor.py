@@ -1,22 +1,33 @@
 from collections import Iterable
 
-from .results.result import ABCResult
-from .states.base_state import BaseState
-from .context import Context
-from .context.backend import BackendNotLoaded, database
-from .logger import log
-from .states import InvalidCommandException, NoHandlerException
-from .states.base import STATES
+from spockesman.results.result import ABCResult
+from spockesman.states.base_state import BaseState
+from spockesman.context import Context
+from spockesman.context.backend import BackendNotLoaded, database
+from spockesman.logger import log
+from spockesman.states import InvalidCommandException, NoHandlerException
+from spockesman.states.base import STATES
 
 
-def check_callable(obj, context, user_input):
+def parse_callable(obj, context, user_input, call_args):
+    return parse_result(obj(context, user_input, *call_args), context,  user_input, call_args)
+
+
+def check_callable(obj, context, user_input, call_args):
     if callable(obj):
-        return obj(context, user_input)
+        return parse_callable(obj, context, user_input, call_args)
     return obj
 
 
-# transforms result received from state into Result or list of Results [Message, Message, ...]
-def parse_result(result, context, user_input):
+def parse_result(result, context, user_input, call_args):
+    """
+    Transform result received from state into Result or list of Results
+    :param result: any object, received from processing user's input
+    :param context: Context object
+    :param user_input: User's input - can be any object
+    :param call_args: additional arguments, received by 'process' previously, can be empty
+    :return: None, ABCResult, List[ABCResult]
+    """
     if isinstance(result, str):
         state = STATES.get(result, None)
         if state is None:
@@ -25,33 +36,44 @@ def parse_result(result, context, user_input):
     # if we got state, return its default
     if isinstance(result, type) and issubclass(result, BaseState):
         context.state = result.name
-        return check_callable(result.default, context, user_input)
+        return check_callable(result.default, context, user_input, call_args)
     elif not result or isinstance(result, ABCResult):
         return result
     elif isinstance(result, Iterable):
-        return [parse_result(part, context, user_input) for part in result]
-    # if we received callable, call it assuming the interface func(context, user_input) and parse its result
+        return [parse_result(part, context, user_input, call_args) for part in result]
+    # if we received callable, call it assuming the interface func(context, user_input, *args) and parse its result
     elif callable(result):
-        return parse_result(result(context, user_input), context,  user_input)
+        return parse_callable(result, context,  user_input, call_args)
     raise TypeError(f"Value {result} returned by state call is not valid type : {type(result)}")
 
 
 def process(user_id, user_input, *call_args, context=None, save=True):
+    """
+    Load user's context, find handler for input and execute it
+    :param user_id: id of current user
+    :param user_input: user's input, any object
+    :param call_args: additional arguments, will be passed to handler, can be empty
+    :param context: None if context should be loaded from backend storage, or Context object
+    :param save: flag indicating if Context should be saved to backend after execution
+    :return: None, ABCResult, List[ABCResult]
+    """
     log.debug(f"Processing input: '{user_input}', user: '{user_id}'")
+    # Try loading context from backend if it was not provided
     if not context:
         try:
             context = database.load(user_id)
         except BackendNotLoaded:
             raise BackendNotLoaded(f"Tried to process input '{user_input}', user: '{user_id}',"
                                    f"but context storage backend was not initialized and no context was passed")
-    no_exceptions = False
     try:
+        # if we no context was found, create new one and return initial states default
         if not context:
             context = Context(user_id)
             result = context.state.default
-        else:
+        else:  # else - call state
             result = context.state(user_input, call_args)
-        final_result = parse_result(result, context, user_input)
+        final_result = parse_result(result, context, user_input, call_args)
+    # catch exceptions and add info messages. We do it here to avoid duplicating error messages everywhere
     except TypeError:
         raise TypeError(f"Tried to process input '{user_input}', user: '{user_id}', "
                         f"input is a command, handler was found, but returned value is invalid")
@@ -64,8 +86,6 @@ def process(user_id, user_input, *call_args, context=None, save=True):
         raise NoHandlerException(f"Tried to process input '{user_input}', user: '{user_id}', "
                                  f"input is a command, but no handler for it was found.")
     else:
-        no_exceptions = True
-        return final_result
-    finally:
-        if save and no_exceptions:
+        if save:
             database.save(context)
+        return final_result

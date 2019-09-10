@@ -1,1 +1,1 @@
-from .context import Context
+from spockesman.context.context import Context

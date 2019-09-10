@@ -1,6 +1,6 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 
-# abstract base class for results of transitions
 class ABCResult(metaclass=ABCMeta):
+    """Abstract base class for results of transitions (functions bound to state graph's edges)"""
     pass

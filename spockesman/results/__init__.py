@@ -1,1 +1,1 @@
-from .result import ABCResult
+from spockesman.results.result import ABCResult

@@ -2,12 +2,13 @@ import importlib
 import yaml
 from types import ModuleType
 
-from .context.backend import database
-from .logger import log
-from .states import Command
-from .states.base import META_STATES
-from .states.commands.command import generate_commands
-from .util.string import upper_and_separate
+from spockesman.context.backend import database
+from spockesman.logger import log
+from spockesman.states import Command
+from spockesman.states.base import META_STATES
+from spockesman.states.commands.command import generate_commands
+from spockesman.util.string import upper_and_separate
+from spockesman.util.matchers import is_vector
 
 
 def command_parser(item):
@@ -31,6 +32,10 @@ PARSER_MAPPING = {
 
 
 class Configuration:
+    """
+    Container for raw configuration data
+    """
+
     @classmethod
     def from_dict(cls, conf_dict):
         self = cls()
@@ -51,6 +56,11 @@ class Configuration:
 
 
 def config_from_object(obj):
+    """
+    Create Configuration class from object with data
+    :param obj: object with configuration data, module or dict
+    :return: Configuration instance
+    """
     dispatcher = {
         dict: Configuration.from_dict,
         ModuleType: Configuration.from_module
@@ -63,7 +73,13 @@ def is_module_path(path):  # TODO, FIXME: hacky way to check if path is a path t
 
 
 def setup(config_pointer):
+    """
+    Read config object and setup framework
+    :param config_pointer: path to .yaml config or name of python module with configuration
+    :return: None
+    """
     log.debug(f"Trying to read config from '{config_pointer}'")
+    # if we got string, interpret it as path to something
     if isinstance(config_pointer, str):
         if config_pointer.endswith('.yaml'):
             with open(config_pointer, 'r') as config_file:
@@ -72,12 +88,15 @@ def setup(config_pointer):
             data = importlib.import_module(config_pointer)
         else:
             raise TypeError('Only .py and .yaml are supported config formats')
+    # else interpret it as config data
     else:
         data = config_pointer
+    # try to load Configuration class from this data
     try:
         config = config_from_object(data)
     except KeyError:
-        raise TypeError(f'Unsupported raw confgi object type: {type(data)}')
+        raise TypeError(f'Unsupported raw config object type: {type(data)}')
+    # then generate commands, activate context backend, and generate states classes
     generate_commands(config.commands)
     database.load_backend(config.context_backend_type, config.context_backend)
     if config.states:
@@ -85,6 +104,11 @@ def setup(config_pointer):
 
 
 def generate_states(states):
+    """
+    Read states config object and create states classes from it
+    :param states: dict with states data
+    :return: None
+    """
     for name, config in states.items():
         attr_dict = {}
         for key, item in config.items():
@@ -105,24 +129,37 @@ def generate_states(states):
 
 
 def parse_item(item, parser=command_parser, parse_list=False):
-    if isinstance(item, list):
+    """
+    Get raw item data and try to parse it to appropriate objects
+    :param item: data to parse (dict, iterable, or single object)
+    :param parser: callable, that takes raw value and returns it's interpretation
+    :param parse_list: flag, indicating if function should return iterables unmodified
+    :return: parsed configuration object
+    """
+    # if item is iterable - try to parse each element
+    if is_vector(item):
         if not parse_list or not parser:
             return list(map(parse_item, item))
         return list(map(parser, item))
+    # if item is simple object - pass it to parser
     if not isinstance(item, dict):
         if not parser:
             return item
         return parser(item)
+    # if item is dict - try to parse it
     parser = None
+    # choose parser based on items type
     if TYPE_SECTION in item:
         parser = PARSER_MAPPING[item[TYPE_SECTION]]
         item.pop(TYPE_SECTION)
+    # recursively parse each item in object
     result = {}
     for key, value in item.items():
         new_value = parse_item(value, parser, parse_list=True)
         if isinstance(new_value, list):
             new_value = attempt_dict_join(new_value)
         result[key] = new_value
+    # if we got {'value': object} return only object
     if isinstance(result, dict) and len(result) == 1 and VALUE_SECTION in result:
         return result[VALUE_SECTION]
     return result
@@ -132,15 +169,14 @@ def attempt_dict_join(attr_list):
     """
     Merges list of 1-element or empty dicts into one dict.
     If any element is not 0 or 1 elements long or not dict - returns unmodified argument
+    :param attr_list: list to try join
+    :return: same list or joined dict
     """
+    joined = {}
     for item in attr_list:
         if not isinstance(item, dict) or not len(item) in (0, 1):
-            break
-    else:
-        res = {}
-        for item in attr_list:
-            res = {**res, **item}
-        return res
-    return attr_list
+            return attr_list
+        joined.update(item)
+    return joined
 
 

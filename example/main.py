@@ -1,6 +1,6 @@
-from tests.bot.bot import bot
-from tests.bot.message import Message
-import tests.bot.config as config
+from example.bot import bot
+from example.message import Message
+import example.config as config
 
 from spockesman import CyclicState, Command, State, global_command, handler, initial, setup, Context
 
@@ -8,23 +8,23 @@ setup(config)
 
 
 @handler(Command.Echo)
-def echo(context, user_input, t):
-    return Message(user_input + t)
+def echo(context, user_input):
+    return Message(user_input + ' Command.Echo')
 
 
 @handler(Command.Start)
-def start(context, user_input, t):
-    return Message('Привет!' + t)
+def start(context, user_input):
+    return Message('Привет! Command.Start')
 
 
 @handler(Command.End)
-def end(context: Context, user_input, t):
-    return Message('Пока!' + t)
+def end(context: Context, user_input):
+    return Message('Пока! Command.End')
 
 
 @global_command(Command.Hi)
-def hi(context, user_input, t):
-    return Message('Hello!' + t)
+def hi(context, user_input):
+    return Message('Hey! Command.Hi')
 
 
 class MainState(CyclicState):
@@ -42,5 +42,5 @@ class InitialState(State):
         }
 
 
-print('STARTING!')
+print('Starting!')
 bot.start_method()

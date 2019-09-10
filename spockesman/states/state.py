@@ -1,5 +1,5 @@
-from .commands import Command, GLOBAL_COMMANDS, COMMANDS
-from .base_state import BaseState
+from spockesman.states.commands import Command, GLOBAL_COMMANDS, COMMANDS
+from spockesman.states.base_state import BaseState
 
 
 class InvalidCommandException(Exception):
@@ -11,7 +11,11 @@ class NoHandlerException(Exception):
 
 
 class State(BaseState):
-    """Class representing general user state."""
+    """
+    Basic state.
+    Represents a node in state's graph, for any input tries to find handler in self.commands,
+    throws InvalidCommandException if does not find any.
+    """
     is_meta = True
     name = 'Basic'
 

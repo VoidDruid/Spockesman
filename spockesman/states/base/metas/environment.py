@@ -1,9 +1,9 @@
-from .exceptions import ConstantViolationException
-from spockesman.logger import log
+from spockesman.states.base.metas.exceptions import ConstantViolationException
 from spockesman.util.singleton import singleton
 
 STATES = {}
 META_STATES = {}
+
 
 @singleton
 class InitialStateHolder:
@@ -30,5 +30,8 @@ INITIAL_STATE = InitialStateHolder()
 
 
 def initial(cls):
+    if INITIAL_STATE.cls:
+        raise ValueError(f'Only one state can be initial!\n'
+                         f'Current initial state: {INITIAL_STATE.cls}, you tried to set another initial state: {cls}')
     INITIAL_STATE.cls = cls
     return cls

@@ -6,12 +6,12 @@ Commands:
   Passd:
   Glob: /lol
 ContextBackend:
-  Type: redis_backend
-  Host: localhost
-  Port: 6379
+  Type: sqlite_backend
+  Host:
+  Port:
   User:
   Password:
-  Name: 0
+  Name: test_db
 Global: [Globs]
 States:
   Main:

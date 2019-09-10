@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class AbstractBackend(metaclass=ABCMeta):
-    """Class representing abstract backend."""
+    """Class representing abstract backend for storing backends."""
 
     @abstractmethod
     def load(self, user_id):

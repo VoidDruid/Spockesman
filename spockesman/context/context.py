@@ -8,6 +8,9 @@ from spockesman.states.base import INITIAL_STATE, STATES
 #  - custom data classes, store data object class
 #  - command to __command and property getter
 class Context:
+    """
+    User context. Contains user's id, state, last command, and arbitrary additional data
+    """
     def __init__(self, user_id, state=None, data=None):
         self.user_id = user_id
         self.__state = None
@@ -40,6 +43,8 @@ class Context:
 
     @property
     def state(self):
+        if self.__state is None:
+            return None
         return STATES[self.__state](self)
 
     @state.setter

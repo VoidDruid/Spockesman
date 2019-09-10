@@ -5,6 +5,7 @@ COMMANDS = {
     'Hi': '/hi',
 }
 
+# You can change it to sqlite_backend if you do not have redis running
 CONTEXT_BACKEND = {
     'Host': 'localhost',
     'Name': 0,

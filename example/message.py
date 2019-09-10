@@ -15,7 +15,7 @@ class ResourceType(Enum):
     PICTURE = auto()
     VIDEO = auto()
     GIF = auto()
-    DOCUMENT = auto()   # TODO: send method in bot
+    DOCUMENT = auto()   # TODO: send method in example
 
 
 class Resource:

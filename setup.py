@@ -7,14 +7,13 @@ import spockesman
 
 setuptools.setup(
     name='Spockesman',
-    packages=find_packages(exclude=["tests.*", "tests"]),
+    packages=find_packages(exclude=['tests.*', 'tests', 'example', 'example.*']),
     version=spockesman.__version__,
     author='Igor Beschastnov',
     description='Declarative state-machine, mainly for chat-bots',
     long_description=open(join(dirname(__file__), 'README.md')).read(),
     install_requires=[
-        'redis>=3.2',
-        'PyYAML>=4.2b1'
+        'PyYAML>=5.1'
     ],
     classifiers=[
         'Programming Language :: Python :: 3.6',

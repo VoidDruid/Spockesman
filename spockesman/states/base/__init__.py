@@ -1,1 +1,1 @@
-from .metas import *
+from spockesman.states.base.metas import *

@@ -2,14 +2,17 @@ import json
 
 import redis
 
-from ...logger import log
-from ..context import Context
-from .abstract import AbstractBackend
+from spockesman.logger import log
+from spockesman.context.context import Context
+from spockesman.context.backend.abstract import AbstractBackend
 
 # TODO: support url connection
 
 
 class RedisBackend(AbstractBackend):
+    """
+    Implementation of abstract backend that uses redis for storage
+    """
     def __init__(self, host, port, db):
         self.__redis = redis.Redis(db=db, host=host, port=port)
 
@@ -29,7 +32,10 @@ class RedisBackend(AbstractBackend):
         self.__redis.flushdb()
 
     def __iter__(self):
-        return self.__redis.scan_iter()
+        for key in self.__redis.scan_iter():
+            context = self.load(key)
+            if context:
+                yield context
 
 
 def activate(config):

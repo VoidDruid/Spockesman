@@ -1,11 +1,11 @@
-from .processor import process
-from .config import setup
-from .states import *
-from .context import Context
-from .context.backend import BackendNotLoaded
-from .results import ABCResult
+from spockesman.processor import process
+from spockesman.config import setup
+from spockesman.states import *
+from spockesman.context import Context
+from spockesman.context.backend import BackendNotLoaded
+from spockesman.results import ABCResult
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 # TODO: refactor relative imports, change everything to absolute imports
 # TODO: move to pytest from unittest

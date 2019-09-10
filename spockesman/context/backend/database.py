@@ -1,6 +1,6 @@
 from importlib import import_module
 
-from ...util.singleton import singleton
+from spockesman.util.singleton import singleton
 
 
 class BackendNotLoaded(Exception):
@@ -9,6 +9,9 @@ class BackendNotLoaded(Exception):
 
 @singleton
 class Database:
+    """
+    Singleton class, presenting interface for working with users' contexts
+    """
     active = None
 
     def __getattr__(self, item):

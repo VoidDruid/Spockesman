@@ -1,8 +1,11 @@
-from .commands import COMMANDS
-from .state import State, InvalidCommandException
+from spockesman.states.commands import COMMANDS
+from spockesman.states.state import State, InvalidCommandException
 
 
 class TransientState(State):
+    """
+    Metastate, that pushes user to another state if handler for input was not found
+    """
     is_meta = True
     name = 'Transient'
     const = 'transition'
