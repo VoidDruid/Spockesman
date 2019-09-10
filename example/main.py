@@ -27,18 +27,18 @@ def hi(context, user_input):
     return Message('Hey! Command.Hi')
 
 
-class MainState(CyclicState):
-    cycle = Command.Echo
-    commands = {
-            Command.End: 'InitialState',
-        }
-
-
 @initial
 class InitialState(State):
     default = Message('Добро пожаловать в бота!')
     commands = {
             Command.Start: 'MainState',
+        }
+
+
+class MainState(CyclicState):
+    cycle = Command.Echo
+    commands = {
+            Command.End: 'InitialState',
         }
 
 

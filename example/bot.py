@@ -29,7 +29,6 @@ class TelegramBot:
         self.__updater = Updater(token=TOKEN)
         self.__dispatcher = self.__updater.dispatcher
         self.__dispatcher.add_handler(MessageHandler(Filters.all, self.text_handler))
-        self.__dispatcher.add_handler(CallbackQueryHandler(self.inline_handler))
 
     def get_lock(self, chat_id):
         if chat_id not in self.__locks:
@@ -47,15 +46,9 @@ class TelegramBot:
     @run_async
     def text_handler(self, bot, update):
         log.info(f"[BOT] Received message '{update.message.text}' from '{update.message.chat_id}'")
-        self.main_handler(bot, update.message.text, update.message.chat_id, update)
+        self.main_handler(update.message.text, update.message.chat_id)
 
-    @run_async
-    def inline_handler(self, bot, update):
-        log.info(f"[BOT] Received callback '{update.callback_query.data}'"
-                 f" from '{update.callback_query.message.chat_id}'")
-        self.main_handler(bot, update.callback_query.data, update.callback_query.message.chat_id, update)
-
-    def main_handler(self, bot, text, chat_id, update):
+    def main_handler(self, text, chat_id):
         # prevent spam
         if not self.get_lock(chat_id):
             return
