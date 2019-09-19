@@ -13,7 +13,8 @@ setuptools.setup(
     description='Declarative state-machine, mainly for chat-bots',
     long_description=open(join(dirname(__file__), 'README.md')).read(),
     install_requires=[
-        'PyYAML>=5.1'
+        'PyYAML>=5.1',
+        'redis>=3.2',
     ],
     classifiers=[
         'Programming Language :: Python :: 3.6',
