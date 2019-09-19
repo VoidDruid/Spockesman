@@ -156,7 +156,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# user
 example/token.py
-/main.py
+main.py
 upload_package.cmd
 test_db.db
