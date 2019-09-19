@@ -17,7 +17,7 @@ class BaseState(metaclass=AbstractStateMeta):
     name = None  # state's name TODO: add validation for uniqueness
 
     @classmethod
-    def is_constant_attr(cls, name):
+    def is_constant_attr(cls, name) -> bool:
         # __const_attrs are added by metaclass, based on this class's 'const'
         # and 'const' of it's parents
         if name in cls.__dict__.get('__const_attrs', {}):

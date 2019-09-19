@@ -1,5 +1,10 @@
+from typing import Callable
+
+from spockesman.context.context import Context
 from spockesman.states.commands import Command, GLOBAL_COMMANDS, COMMANDS
+from spockesman.states.commands.command import CommandDescriptor
 from spockesman.states.base_state import BaseState
+from spockesman.typings import HandlerResultType, InputType
 
 
 class InvalidCommandException(Exception):
@@ -20,10 +25,21 @@ class State(BaseState):
     name = 'Basic'
 
     def __init__(self, context):
+        """
+        Created concrete state graph node for user with context
+        :param context: user's context
+        """
         self._context = context
 
-    def __call__(self, *args, **kwargs):
-        user_input, call_args = args[:2]
+    def __call__(self, user_input, call_args, **kwargs) -> HandlerResultType:
+        """
+        Executes state machine logic,
+        for user with context passed to __init__, and triggered by user_input
+        :param user_input: input, that triggered transition
+        :param call_args: additional arguments
+        :param kwargs: additional keyword arguments  TODO: use them
+        :return:
+        """
         if self._context.input:
             command = Command[self._context.command]
         else:
@@ -36,10 +52,17 @@ class State(BaseState):
                 raise InvalidCommandException(f'No such command: {user_input}')
         binding = GLOBAL_COMMANDS.get(command, None)
         if not binding:
-            binding = self.transition(command)
+            binding = self.find_transition(command)
         return self.run(binding, user_input, call_args)
 
-    def run(self, binding, user_input, call_args):
+    def run(self, binding: Callable, user_input: InputType, call_args: tuple) -> HandlerResultType:
+        """
+        Runs transition, triggered by user.
+        :param binding: callable, representing state graph's edge
+        :param user_input: input, that triggered transition
+        :param call_args: additional arguments
+        :return: return value of binding
+        """
         if not callable(binding) or isinstance(binding, type):
             if isinstance(binding, type) and not issubclass(binding, BaseState):
                 raise TypeError(f'Incorrect command binding type! Got type: {type(binding)} '
@@ -47,7 +70,12 @@ class State(BaseState):
             return binding
         return binding(self._context, user_input, *call_args)
 
-    def transition(self, command):
+    def find_transition(self, command: CommandDescriptor) -> Callable:
+        """
+        Finds and returns callable, representing state graph's edge, bound to specified command
+        :param command: command which we are looking for
+        :return: callable, bound to command
+        """
         if command not in self.commands:
             raise InvalidCommandException(
                 f"Command '{command}' is not available in current state"
@@ -58,5 +86,5 @@ class State(BaseState):
             )
         return COMMANDS[command](self.commands[command])
 
-    def get_context(self):
+    def get_context(self) -> Context:
         return self._context

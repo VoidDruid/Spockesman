@@ -1,21 +1,28 @@
 import importlib
+from typing import Union, List
+
 import yaml
 from types import ModuleType
 
 from spockesman.context.backend import database
 from spockesman.logger import log
 from spockesman.states import Command
+from spockesman.states.commands.command import CommandDescriptor
 from spockesman.states.base import META_STATES
 from spockesman.states.commands.command import generate_commands
 from spockesman.util.string import upper_and_separate
 from spockesman.util.matchers import is_vector
 
 
-def command_parser(item):
+def is_module_path(path) -> bool:  # TODO, FIXME: bad check if string is a path to module. Refactor!
+    return '.' in path
+
+
+def command_parser(item) -> CommandDescriptor:
     return Command[item]
 
 
-def state_parser(item):
+def state_parser(item) -> str:
     return str(item)
 
 
@@ -35,6 +42,10 @@ class Configuration:
     """
     Container for raw configuration data
     """
+    commands: dict
+    context_backend: dict
+    context_backend_type: str
+    states: dict
 
     @classmethod
     def from_dict(cls, conf_dict):
@@ -55,7 +66,7 @@ class Configuration:
         return self
 
 
-def config_from_object(obj):
+def config_from_object(obj) -> Configuration:
     """
     Create Configuration class from object with data
     :param obj: object with configuration data, module or dict
@@ -68,11 +79,7 @@ def config_from_object(obj):
     return dispatcher[type(obj)](obj)
 
 
-def is_module_path(path):  # TODO, FIXME: hacky way to check if path is a path to module. Refactor!
-    return '.' in path
-
-
-def setup(config_pointer):
+def setup(config_pointer) -> None:
     """
     Read config object and setup framework
     :param config_pointer: path to .yaml config or name of python module with configuration
@@ -128,7 +135,11 @@ def generate_states(states):
         type(metastate)(name, (metastate,), attr_dict)
 
 
-def parse_item(item, parser=command_parser, parse_list=False):
+def parse_item(
+        item: Union[dict, list],
+        parser=command_parser,
+        parse_list=False
+) -> Union[dict, CommandDescriptor, str, List]:
     """
     Get raw item data and try to parse it to appropriate objects
     :param item: data to parse (dict, iterable, or single object)
@@ -165,7 +176,7 @@ def parse_item(item, parser=command_parser, parse_list=False):
     return result
 
 
-def attempt_dict_join(attr_list):
+def attempt_dict_join(attr_list: list) -> Union[list, dict]:
     """
     Merges list of 1-element or empty dicts into one dict.
     If any element is not 0 or 1 elements long or not dict - returns unmodified argument

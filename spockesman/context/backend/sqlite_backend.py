@@ -6,7 +6,7 @@ from spockesman.context.context import Context
 from spockesman.context.backend.abstract import AbstractBackend
 
 
-class SqliteBackend(AbstractBackend):
+class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and inherit from it
     """
     Implementation of abstract backend that uses redis for storage
     """
@@ -81,6 +81,6 @@ class SqliteBackend(AbstractBackend):
                 yield context
 
 
-def activate(config):
+def activate(config) -> SqliteBackend:
     log.debug('Activating SQLITE context backend')
     return SqliteBackend(config['Name'])

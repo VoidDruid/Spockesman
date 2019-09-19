@@ -5,7 +5,7 @@ GLOBAL_COMMANDS = {}
 COMMANDS = {}
 
 
-def add_bound(command, handler):
+def add_bound(command, handler) -> None:
     """
     Adds command handler to global dict
     :param command: handled Command
@@ -16,7 +16,7 @@ def add_bound(command, handler):
     COMMANDS[command] = handler
 
 
-def add_global(command, handler):
+def add_global(command, handler) -> None:
     """
     Adds command handler to global dict
     :param command: handled Command

@@ -20,4 +20,8 @@ class TransientState(State):
         try:
             return super().__call__(user_input, call_args)
         except InvalidCommandException:
-            return COMMANDS[self.transition['Command']](self.transition['State'])(self._context, user_input, *call_args)
+            return (
+                COMMANDS[self.transition['Command']]
+                (self.transition['State'])
+                (self._context, user_input, *call_args)
+            )

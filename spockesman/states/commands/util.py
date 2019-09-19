@@ -1,4 +1,12 @@
-def default_context_transform(context, state, command):
+from typing import Union
+
+from spockesman.context.context import Context
+from spockesman.states.base_state import BaseState
+from spockesman.states.commands.command import CommandDescriptor
+
+
+def default_context_transform(context: Context, state: Union[BaseState, CommandDescriptor],
+                              command: CommandDescriptor) -> None:
     """
     Push user to new state and set last command's name
     :param context: Context object

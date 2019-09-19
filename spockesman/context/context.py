@@ -1,6 +1,8 @@
 from copy import deepcopy
+from typing import Union, Optional
 
 from spockesman.states.base import INITIAL_STATE, STATES
+from spockesman.states.base_state import BaseState
 
 
 # TODO:
@@ -11,7 +13,7 @@ class Context:
     """
     User context. Contains user's id, state, last command, and arbitrary additional data
     """
-    def __init__(self, user_id, state=None, data=None):
+    def __init__(self, user_id: str, state: BaseState = None, data: Union[list, dict] = None):
         self.user_id = user_id
         self.__state = None
         self.state = state
@@ -22,7 +24,8 @@ class Context:
         else:
             self.data = data
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        data_dump = {}
         if isinstance(self.data, dict) or isinstance(self.data, list):
             data_dump = self.data
         #elif hasattr(self.data, 'to_dict'):  # FIXME, for now left as-is
@@ -35,20 +38,20 @@ class Context:
             'data': data_dump
         }
 
-    def clone(self, context):
+    def clone(self, context) -> None:
         self.__state = context.state
         self.input = context.input
         self.command = context.command
         self.data = deepcopy(context.data)
 
     @property
-    def state(self):
+    def state(self) -> Optional[BaseState]:
         if self.__state is None:
             return None
         return STATES[self.__state](self)
 
     @state.setter
-    def state(self, state_):
+    def state(self, state_: Union[None, str, BaseState]):
         if not state_:
             state_ = INITIAL_STATE.name
         if isinstance(state_, type):

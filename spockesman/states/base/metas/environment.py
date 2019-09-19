@@ -11,12 +11,12 @@ class InitialStateHolder:
     __cls = None
 
     @property
-    def name(self):
+    def name(self) -> str:
         if self.__cls:
             return self.__cls.__name__
 
     @property
-    def cls(self):
+    def cls(self) -> type:
         return self.__cls
 
     @cls.setter
@@ -29,7 +29,7 @@ class InitialStateHolder:
 INITIAL_STATE = InitialStateHolder()
 
 
-def initial(cls):
+def initial(cls) -> type:
     if INITIAL_STATE.cls:
         raise ValueError(f'Only one state can be initial!\n'
                          f'Current initial state: {INITIAL_STATE.cls}, you tried to set another initial state: {cls}')

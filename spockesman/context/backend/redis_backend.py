@@ -38,6 +38,6 @@ class RedisBackend(AbstractBackend):
                 yield context
 
 
-def activate(config):
+def activate(config) -> RedisBackend:
     log.debug('Activating REDIS context backend')
     return RedisBackend(config['Host'], int(config['Port']), int(config['Name']))

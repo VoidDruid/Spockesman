@@ -159,3 +159,4 @@ venv.bak/
 example/token.py
 /main.py
 upload_package.cmd
+test_db.db
