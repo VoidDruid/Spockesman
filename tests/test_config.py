@@ -1,13 +1,10 @@
-import importlib
-import unittest
-
-from .util import reload, BaseTestCase
+from .util import BaseTestCase
 
 
 class ConfigTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
-        cls.M = reload()
+        cls.setUpPackage(cls)
         cls.STATES = cls.M.states.base.STATES
         cls.M.setup('tests/config.yaml')
 

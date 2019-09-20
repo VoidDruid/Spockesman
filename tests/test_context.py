@@ -1,6 +1,4 @@
-import unittest
-
-from .util import reload, BaseTestCase
+from .util import BaseTestCase
 
 
 class ContextTest(BaseTestCase):
@@ -8,7 +6,7 @@ class ContextTest(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.M = reload()
+        cls.setUpPackage(cls)
         cls.M.setup('tests/config.yaml')
 
     def test_context(self):
@@ -25,9 +23,8 @@ class ContextTest(BaseTestCase):
         class TestUnregisteredState:
             def __init__(self, context_):
                 pass
-        context = self.M.Context(self.user_id, TestUnregisteredState)
-        with self.assertRaises(KeyError):
-            state = context.state
+        with self.assertRaises(TypeError):
+            self.M.Context(self.user_id, TestUnregisteredState)
 
     def test_context_state(self):
         class TestState(self.M.State):

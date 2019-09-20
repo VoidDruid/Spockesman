@@ -16,6 +16,10 @@ def reload():
 
 
 class BaseTestCase(unittest.TestCase):
+    @staticmethod
+    def setUpPackage(cls):
+        cls.M = reload()
+
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'M') and cls.M.context.backend.database.active:

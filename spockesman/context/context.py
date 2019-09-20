@@ -28,7 +28,8 @@ class Context:
         data_dump = {}
         if isinstance(self.data, dict) or isinstance(self.data, list):
             data_dump = self.data
-        #elif hasattr(self.data, 'to_dict'):  # FIXME, for now left as-is
+        # TODO - for now left as-is, so I don't forget the idea
+        #elif hasattr(self.data, 'to_dict'):
         #    data_dump = self.data.to_dict()
         return {
             'state': self.__state,
@@ -53,11 +54,23 @@ class Context:
     @state.setter
     def state(self, state_: Union[None, str, BaseState]):
         if not state_:
-            state_ = INITIAL_STATE.name
-        if isinstance(state_, type):
-            self.__state = state_.__name__
+            self.__state = INITIAL_STATE.name
+            return
+        elif isinstance(state_, str):
+            state_name = state_
+        elif isinstance(state_, type) and issubclass(state_, BaseState):
+            state_name = state_.name
         else:
-            self.__state = state_
+            raise TypeError(
+                f'State for context must be either a subclass of BaseState or string, '
+                f'not a {type(state_)}'
+            )
+        if state_name not in STATES:
+            raise ValueError(
+                f"State {state_} is not registered! Maybe it's a metastate? "
+                f"If so, set flag is_meta to False, or user concrete state"
+            )
+        self.__state = state_name
 
     @classmethod
     def from_dict(cls, data):

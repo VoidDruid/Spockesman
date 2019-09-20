@@ -30,7 +30,9 @@ class StateMeta(type):
                 if isinstance(const, str):
                     const = (const,)
             else:
-                raise TypeError('<const> class attribute must be either an iterable of strings or a string')
+                raise TypeError(
+                    '<const> class attribute must be either an iterable of strings or a string'
+                )
         if bases:  # get last parents const
             last_const = bases[0].__dict__[CONST_PRIVATE_NAME]
         else:

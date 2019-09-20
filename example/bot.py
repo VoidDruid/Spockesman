@@ -2,7 +2,7 @@ import logging
 from queue import Queue
 from threading import Lock, Thread, current_thread
 
-from telegram.ext import CallbackQueryHandler, Filters, MessageHandler, Updater
+from telegram.ext import Filters, MessageHandler, Updater
 from telegram.ext.dispatcher import Dispatcher, run_async
 
 from spockesman import process

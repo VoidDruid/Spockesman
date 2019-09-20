@@ -1,7 +1,4 @@
-import importlib
-import unittest
-
-from .util import reload, BaseTestCase
+from .util import BaseTestCase
 
 
 class StateCallsTest(BaseTestCase):
@@ -14,7 +11,7 @@ class StateCallsTest(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.M = reload()
+        cls.setUpPackage(cls)
         cls.STATES = cls.M.states.base.STATES
         cls.M.setup('tests/config.yaml')
         cls.context = cls.M.Context(cls.user_id)

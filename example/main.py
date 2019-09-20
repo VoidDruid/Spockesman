@@ -9,22 +9,22 @@ setup(config)
 
 @handler(Command.Echo)
 def echo(context, user_input):
-    return Message(user_input + ' Command.Echo')
+    return Message(user_input + ' Выполняю Command.Echo')
 
 
 @handler(Command.Start)
 def start(context, user_input):
-    return Message('Привет! Command.Start')
+    return Message('Старт! Выполняю Command.Start')
 
 
 @handler(Command.End)
 def end(context: Context, user_input):
-    return Message('Пока! Command.End')
+    return Message('Конец! Выполняю Command.End')
 
 
 @global_command(Command.Hi)
 def hi(context, user_input):
-    return Message('Hey! Command.Hi')
+    return Message('Hello! Выполняю Command.Hi')
 
 
 @initial

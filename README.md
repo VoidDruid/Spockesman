@@ -7,7 +7,6 @@
 Example usage in *examples directory*.
 
 ### Roadmap:
-- Move to **pytest** from unittest
 - Do we really need to do `user_input, call_args = args[:2]` everywhere?
 Do we even need `*args` and `**kwargs` in state's `__call__`?
 - More **tests**: context backend, state processing, tricky handlers
@@ -18,3 +17,4 @@ Do we even need `*args` and `**kwargs` in state's `__call__`?
     - setup code-coverage checks
 - #### Ideas:
     - Generate config file from loaded state machine
+    - Move to **pytest** from unittest?

@@ -1,4 +1,7 @@
-import json
+try:
+    import ujson as json
+except ImportError:
+    import json
 import sqlite3
 
 from spockesman.logger import log
@@ -10,13 +13,6 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
     """
     Implementation of abstract backend that uses redis for storage
     """
-    @staticmethod
-    def bool_to_int(value):
-        if value:
-            return 1
-        else:
-            return 0
-
     @staticmethod
     def bool_from_int(value):
         if value == 0:
@@ -58,7 +54,7 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
         else:
             state_name = None
         self.__cursor.execute(query, [context.user_id, state_name, context.command,
-                                      self.bool_to_int(context.input), data])
+                                      int(context.input), data])
         self.__db.commit()
 
     def delete(self, *user_ids):

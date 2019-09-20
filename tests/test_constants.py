@@ -1,6 +1,4 @@
-import unittest
-
-from .util import reload, BaseTestCase
+from .util import BaseTestCase
 
 
 class ConstantsTest(BaseTestCase):
@@ -8,7 +6,7 @@ class ConstantsTest(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.M = reload()
+        cls.setUpPackage(cls)
         cls.context = cls.M.Context(cls.user_id)
 
     def test_basic_constants(self):
