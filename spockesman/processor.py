@@ -65,12 +65,19 @@ def parse_result(
     raise TypeError(f"Value {result} returned by state call is not valid type : {type(result)}")
 
 
+class CorruptedContextRecord(Exception):
+    def __init__(self, err):
+        Exception.__init__(self, 'Could not load context - context backend record is corrupted')
+        self.error = err
+
+
 def process(
         user_id: str,
         user_input: InputType,
         *call_args,
         context: Context = None,
-        save: bool = True
+        save: bool = True,
+        delete_failed_loads = False,
 ) -> ProcessingResult:
     """
     Load user's context, find handler for input and execute it
@@ -79,6 +86,7 @@ def process(
     :param call_args: additional arguments, will be passed to handler, can be empty
     :param context: None if context should be loaded from backend storage, or Context object
     :param save: flag indicating if Context should be saved to backend after execution
+    :param delete_failed_loads: flag indicating if we should delete corrupted records
     :return: None, ABCResult, List[ABCResult]
     """
     log.debug(f"Processing input: '{user_input}', user: '{user_id}'")
@@ -91,6 +99,10 @@ def process(
                 f"Tried to process input '{user_input}', user: '{user_id}',"
                 f"but context storage backend was not initialized and no context was passed"
             )
+        except Exception as e:
+            if delete_failed_loads:
+                database.delete(user_id)
+            raise CorruptedContextRecord(e)
     try:
         # if we no context was found, create new one and return initial states default
         if not context:
