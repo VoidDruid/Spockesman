@@ -12,7 +12,7 @@ Do we even need `*args` and `**kwargs` in state's `__call__`?
 - More **tests**: context backend, state processing, tricky handlers
 - Remove global variables! **Make state machine a class**, instead of collection of `COMMANDS` and `STATES`
 - #### CI:
-    - setup integrate TeamCity
+    - integrate TeamCity
     - setup linters
     - setup code-coverage checks
 - #### Ideas:

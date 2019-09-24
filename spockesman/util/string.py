@@ -1,6 +1,6 @@
 def upper_and_separate(string):
     """
-    Transform ThisNotation to THIS_NOTATION
+    Transform 'ThisNotation' to 'THIS_NOTATION'
     :param string: any string
     :return: transformed string from ThisNotation to THIS_NOTATION
     """

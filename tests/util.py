@@ -7,6 +7,8 @@ PACKAGE_NAME = 'spockesman'
 
 def reload():
     to_pop = []
+    M = sys.modules[PACKAGE_NAME]
+    M.context.backend.database.deactivate_backend()
     for module_name, module in sys.modules.items():
         if module_name.startswith(PACKAGE_NAME):
             to_pop.append(module_name)

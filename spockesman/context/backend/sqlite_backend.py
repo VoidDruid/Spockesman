@@ -1,7 +1,3 @@
-try:
-    import ujson as json
-except ImportError:
-    import json
 import sqlite3
 
 from spockesman.logger import log
@@ -28,33 +24,45 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
         self.__db = sqlite3.connect(db, check_same_thread=False)
         self.__cursor = self.__db.cursor()
         self.__cursor.execute('create table if not exists context'
-                              '(user_id text, state text, command text, input integer, data text)')
+                              '(user_id text, type text, state text, command text, input integer,'
+                              'data text, additional text)')
         self.__db.commit()
 
+    def deactivate(self):
+        try:
+            self.__db.close()
+            return True
+        except sqlite3.Error:
+            return False
+
+    def __del__(self):
+        self.deactivate()
+
     def load(self, user_id):
-        query = 'select state, command, input, data from context where user_id=?'
+        query = 'select type, state, command, input, data, additional from context where user_id=?'
         values = self.__cursor.execute(query, (user_id,)).fetchone()
         if not values:
             return None
-        state, command, input_, data = values
-        try:
-            data = json.loads(data)
-        except json.JSONDecodeError:
-            raise ValueError(f'User {user_id} data is broken!')
-        context = Context(user_id, state, data)
+        type_, state, command, input_, data, additional = values
+        context = Context.unpickle_type(type_)(user_id, state)
+        context.load_data(data)
         context.input = self.bool_from_int(input_)
+        context._set_additional_fields(additional)
         return context
 
     def save(self, context):
-        data = json.dumps(context.data)
-        query = 'insert into context (user_id, state, command, input, data) values (?, ?, ?, ?, ?)'
+        data = context.dump_data()
+        additional = context._get_additional_fields()
+        query = 'insert into context' \
+                '(user_id, type, state, command, input, data, additional) ' \
+                'values (?, ?, ?, ?, ?, ?, ?)'
         state = context.state
         if state is not None:
             state_name = state.name
         else:
             state_name = None
-        self.__cursor.execute(query, [context.user_id, state_name, context.command,
-                                      int(context.input), data])
+        self.__cursor.execute(query, (context.user_id, context.pickled_type, state_name, context.command,
+                                      int(context.input), data, additional))
         self.__db.commit()
 
     def delete(self, *user_ids):

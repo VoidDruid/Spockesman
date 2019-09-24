@@ -1,6 +1,12 @@
+try:
+    import ujson as json
+except ImportError:
+    import json
+import pickle
 from copy import deepcopy
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
+from spockesman.logger import log
 from spockesman.states.base import INITIAL_STATE, STATES
 from spockesman.states.base_state import BaseState
 
@@ -13,37 +19,27 @@ class Context:
     """
     User context. Contains user's id, state, last command, and arbitrary additional data
     """
-    def __init__(self, user_id: str, state: BaseState = None, data: Union[list, dict] = None):
+    PICKLING_PROTOCOL = 3
+    default_fields = ('user_id', 'input', 'command')
+
+    def __init__(self, user_id: str, state: BaseState = None, data: dict = None):
         self.user_id = user_id
         self.__state = None
         self.state = state
         self.input = False
         self.command = None
         if data is None:
-            self.data = {}
+            self._data = {}
         else:
-            self.data = data
+            self._data = data
 
-    def to_dict(self) -> dict:
-        data_dump = {}
-        if isinstance(self.data, dict) or isinstance(self.data, list):
-            data_dump = self.data
-        # TODO - for now left as-is, so I don't forget the idea
-        #elif hasattr(self.data, 'to_dict'):
-        #    data_dump = self.data.to_dict()
-        return {
-            'state': self.__state,
-            'input': self.input,
-            'command': self.command,
-            'user_id': self.user_id,
-            'data': data_dump
-        }
+    @property
+    def pickled_type(self):
+        return pickle.dumps(type(self), self.PICKLING_PROTOCOL)
 
-    def clone(self, context) -> None:
-        self.__state = context.state
-        self.input = context.input
-        self.command = context.command
-        self.data = deepcopy(context.data)
+    @staticmethod
+    def unpickle_type(type_str):
+        return pickle.loads(type_str)
 
     @property
     def state(self) -> Optional[BaseState]:
@@ -72,13 +68,128 @@ class Context:
             )
         self.__state = state_name
 
+    def clone(self, context) -> None:
+        self.__state = context.state
+        self.input = context.input
+        self.command = context.command
+        self._data = deepcopy(context._data)
+        self.install_additional_fields(context.prepare_additional_fields())
+
+    def to_dict(self) -> dict:
+        return {
+            'state': self.__state,
+            'input': self.input,
+            'command': self.command,
+            'user_id': self.user_id,
+            'data': self._data,
+            'additional': self._get_additional_fields(),
+        }
+
     @classmethod
     def from_dict(cls, data):
         context = cls(data['user_id'], data['state'])
         context.input = data.get('input', False)
         context.command = data.get('command', None)
-        context.data = data.get('data', {})
+        context._data = data.get('data', {})
+        context._set_additional_fields(data.get('additional', None))
         return context
 
+    def store(self, key: str, value: Union[dict, list, str, int, float, bool]):
+        """
+        Add data to context._data. We check that key is a string, because we save _data to json,
+        which can break some keys (1 -> '1'), but we do not check value,
+        because it can be a dict or a list, and checking it would be too expensive
+        and json will raise exception on any errors anyway
+        :param key:
+        :param value:
+        :return:
+        """
+        if not isinstance(key, str):
+            raise TypeError(f'Only strings are allowed as keys to context data, not <type(key)>')
+        self._data[key] = value
+
+    def dump_data(self):
+        try:
+            return json.dumps(self._data)
+        except TypeError as e:
+            raise TypeError(f'Error while dumping context data - {e.args[0]}')
+
+    def load_data(self, json_str):
+        if self._data:
+            raise ValueError('Data can be loaded only into empty context')
+        try:
+            self._data = json.loads(json_str)
+        except json.JSONDecodeError:
+            raise ValueError(f'Json representation of data is invalid: {json_str}')
+
+    # Following method allow us to access context data easily:
+    #
+    # Example:
+    #
+    # context = Context('user_id')
+    # context.store('item', 'Some item')
+    # context['item'] == context._data['item'] == 'Some item'
     def __getitem__(self, item):
-        return self.data[item]
+        return self._data[item]
+
+    # NOTE: We use json for data and pickle for additional fields,
+    # because json is safe and pickle is NOT, so we provide 'data' dict as default storage
+    # If user wants to store any objects, we provide the option to use additional fields with pickle
+    # But control over it's safety is delegated to user
+    # BY DEFAULT: store all public fields
+    #
+    # Following methods allow users to subclass Context,
+    # add fields to it and describe how they should be loaded/stored
+    #
+    # Example:
+    #
+    # class CustomContext(Context):
+    #     def __init__(self, new_field, *args, **kwargs, ):
+    #         super().__init__(*args, **kwargs)
+    #         self.new_field = new_field
+    #
+    #     def prepare_additional_fields(self):
+    #         return {'new_field': self.new_field}
+    #
+    #     def install_additional_fields(self, data):
+    #         self.new_field = data['new_field']
+
+    def prepare_additional_fields(self) -> Any:
+        """
+        Creates object that can be pickled, storing info about additional fields
+        :return: object with all additional info that you want to save
+        """
+        default_fields = {
+            key: item for key, item in self.__dict__.items()
+            if not key.startswith('_') and key not in self.default_fields
+        }
+        if not default_fields:
+            return None
+        return default_fields
+
+    def install_additional_fields(self, data: Any):
+        """
+        Base method, that user can override to implement loading custom fields for stored 'data'
+        :param data: unpickled data object from 'prepare_additional_fields', loaded from backend
+        :return: None
+        """
+        self.__dict__.update(data)
+
+    def _get_additional_fields(self):
+        try:
+            prepared_data = self.prepare_additional_fields()
+            if prepared_data is None:
+                return None
+            return pickle.dumps(prepared_data, self.PICKLING_PROTOCOL)
+        except pickle.PicklingError:
+            log.exception("Error while pickling additional context fields!")
+            raise
+
+    def _set_additional_fields(self, data):
+        if data is None:
+            return
+        try:
+            self.install_additional_fields(pickle.loads(data))
+        except pickle.UnpicklingError:
+            log.exception("Error while unpickling additional context element!")
+            raise

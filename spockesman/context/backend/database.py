@@ -2,7 +2,7 @@ from importlib import import_module
 
 from spockesman.util.singleton import singleton
 from spockesman.context.context import Context
-
+from spockesman.context.backend.abstract import AbstractBackend
 
 class BackendNotLoaded(Exception):
     pass
@@ -13,7 +13,7 @@ class Database:
     """
     Singleton class, presenting interface for working with users' contexts
     """
-    active = None
+    active: AbstractBackend = None
 
     def __getattr__(self, item):
         if item not in ('active', 'load_backend') and not self.activated:
@@ -40,6 +40,11 @@ class Database:
                 f"for example of backend provider module.\n"
                 f"Imported module: {back}"
             )
+
+    def deactivate_backend(self) -> bool:
+        if not self.active:
+            return True
+        return self.active.deactivate()
 
     def load(self, user_id) -> Context:
         return self.active.load(user_id)

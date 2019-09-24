@@ -5,6 +5,8 @@ from spockesman.context.context import Context
 
 class AbstractBackend(metaclass=ABCMeta):
     """Class representing abstract backend for storing backends."""
+    def deactivate(self) -> bool:
+        return True
 
     @abstractmethod
     def load(self, user_id) -> Context:

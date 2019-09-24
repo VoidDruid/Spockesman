@@ -16,17 +16,22 @@ class RedisBackend(AbstractBackend):
     """
     Implementation of abstract backend that uses redis for storage
     """
+    value_key = 'value'
+    type_key = 'type'
+
     def __init__(self, host, port, db):
         self.__redis = redis.Redis(db=db, host=host, port=port)
 
     def load(self, user_id):
-        data = self.__redis.get(user_id)
-        if data:
-            return Context.from_dict(json.loads(data))
+        data = self.__redis.hget(user_id, self.value_key)
+        type_ = self.__redis.hget(user_id, self.type_key)
+        if data and type:
+            return Context.unpickle_type(type_).from_dict(json.loads(data))
         return None
 
     def save(self, context):
-        self.__redis.set(context.user_id, json.dumps(context.to_dict()))
+        self.__redis.hset(context.user_id, self.type_key, context.pickled_type)
+        self.__redis.hset(context.user_id, self.value_key, json.dumps(context.to_dict()))
 
     def delete(self, *user_ids):
         self.__redis.delete(user_ids)
