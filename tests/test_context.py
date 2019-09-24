@@ -15,19 +15,23 @@ class ContextTest(BaseTestCase):
 
     def test_basic(self):
         context = self.context
-        self.assertDictEqual({
-            'state': None,
-            'input': False,
-            'command': None,
-            'user_id': self.user_id,
-            'data': {},
-            'additional': None
-        }, context.to_dict())
+        self.assertDictEqual(
+            {
+                'state': None,
+                'input': False,
+                'command': None,
+                'user_id': self.user_id,
+                'data': {},
+                'additional': None,
+            },
+            context.to_dict(),
+        )
 
     def test_raises_on_unregistered(self):
         class TestUnregisteredState:
             def __init__(self, context_):
                 pass
+
         with self.assertRaises(TypeError):
             self.M.Context(self.user_id, TestUnregisteredState)
 
@@ -35,32 +39,40 @@ class ContextTest(BaseTestCase):
         class TestState(self.M.State):
             def __init__(self, context_):
                 pass
+
         context = self.M.Context(self.user_id, TestState)
         self.assertTrue(isinstance(context.state, TestState))
-        self.assertDictEqual({
-            'state': 'TestState',
-            'input': False,
-            'command': None,
-            'user_id': self.user_id,
-            'data': {},
-            'additional': None
-        }, context.to_dict())
+        self.assertDictEqual(
+            {
+                'state': 'TestState',
+                'input': False,
+                'command': None,
+                'user_id': self.user_id,
+                'data': {},
+                'additional': None,
+            },
+            context.to_dict(),
+        )
 
     def test_initial_state(self):
         @self.M.initial
         class TestInitialState(self.M.State):
             def __init__(self, context_):
                 pass
+
         context = self.context
         self.assertTrue(isinstance(context.state, TestInitialState))
-        self.assertDictEqual({
-            'state': 'TestInitialState',
-            'input': False,
-            'command': None,
-            'user_id': self.user_id,
-            'data': {},
-            'additional': None
-        }, context.to_dict())
+        self.assertDictEqual(
+            {
+                'state': 'TestInitialState',
+                'input': False,
+                'command': None,
+                'user_id': self.user_id,
+                'data': {},
+                'additional': None,
+            },
+            context.to_dict(),
+        )
 
     def test_data_access(self):
         context = self.context
@@ -79,9 +91,7 @@ class ContextTest(BaseTestCase):
 
         context = CustomContext(self.user_id, new_field='new_field_value')
         self.assertEqual(context.new_field, 'new_field_value')
-        self.assertDictEqual({
-            'new_field': 'new_field_value',
-        }, context.prepare_additional_fields())
+        self.assertDictEqual({'new_field': 'new_field_value'}, context.prepare_additional_fields())
 
     def test_cloning(self):
         class CustomContext(self.M.Context):

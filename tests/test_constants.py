@@ -33,6 +33,7 @@ class ConstantsTest(BaseTestCase):
         class NewState(self.M.State):
             test = "Test string"
             const = ('test',)
+
         with self.assertRaises(self.M.states.ConstantViolationException):
             NewState.test = "New string"
         with self.assertRaises(self.M.states.ConstantViolationException):
@@ -42,6 +43,7 @@ class ConstantsTest(BaseTestCase):
         class NewState(self.M.CyclicState):
             test = "Test string"
             const = ('test',)
+
         with self.assertRaises(self.M.states.ConstantViolationException):
             NewState.test = "New string"
         with self.assertRaises(self.M.states.ConstantViolationException):
@@ -55,7 +57,8 @@ class ConstantsTest(BaseTestCase):
             const = ('test',)
 
         class NewSecondState(NewState):
-            const = ('another', )
+            const = ('another',)
+
         with self.assertRaises(self.M.states.ConstantViolationException):
             NewSecondState.test = "New string"
         with self.assertRaises(self.M.states.ConstantViolationException):

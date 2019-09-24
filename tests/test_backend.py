@@ -13,7 +13,6 @@ class CustomContext(spockesman.Context):
 
 # NOTE: In this test case, we need local spockesman instances to test different backends
 class BackendTest(BaseTestCase):
-
     @staticmethod
     def add_data(context):
         context.store('int', 1)
@@ -38,22 +37,12 @@ class BackendTest(BaseTestCase):
 
     def test_sqlite_backend(self):
         M = reload()
-        M.context.backend.database.load_backend(
-            'sqlite_backend',
-            {
-                'Name': 'test_db',
-            },
-        )
+        M.context.backend.database.load_backend('sqlite_backend', {'Name': 'test_db'})
         self.simple_context_check(M)
 
     def test_sqlite_backend_additional_fields(self):
         M = reload()
-        M.context.backend.database.load_backend(
-            'sqlite_backend',
-            {
-                'Name': 'test_db',
-            },
-        )
+        M.context.backend.database.load_backend('sqlite_backend', {'Name': 'test_db'})
         user_id = uuid4().hex
         context = CustomContext(user_id, new_field='new_field_value')
         self.add_data(context)
