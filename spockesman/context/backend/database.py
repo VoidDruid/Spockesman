@@ -4,6 +4,7 @@ from spockesman.util.singleton import singleton
 from spockesman.context.context import Context
 from spockesman.context.backend.abstract import AbstractBackend
 
+
 class BackendNotLoaded(Exception):
     pass
 
@@ -13,6 +14,7 @@ class Database:
     """
     Singleton class, presenting interface for working with users' contexts
     """
+
     active: AbstractBackend = None
 
     def __getattr__(self, item):
@@ -63,4 +65,3 @@ class Database:
 
 
 database = Database()
-

@@ -16,6 +16,7 @@ class RedisBackend(AbstractBackend):
     """
     Implementation of abstract backend that uses redis for storage
     """
+
     value_key = 'value'
     type_key = 'type'
 

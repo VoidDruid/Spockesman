@@ -12,19 +12,16 @@ from spockesman.typings import InputType, HandlerResultType, ProcessingResult
 
 
 def parse_callable(
-        obj: Callable,
-        context: Context,
-        user_input: InputType,
-        call_args: tuple
+    obj: Callable, context: Context, user_input: InputType, call_args: tuple
 ) -> ProcessingResult:
-    return parse_result(obj(context, user_input, *call_args), context,  user_input, call_args)
+    return parse_result(obj(context, user_input, *call_args), context, user_input, call_args)
 
 
 def check_callable(
-        obj: Union[Callable, ProcessingResult],
-        context: Context,
-        user_input: InputType,
-        call_args: tuple
+    obj: Union[Callable, ProcessingResult],
+    context: Context,
+    user_input: InputType,
+    call_args: tuple,
 ) -> ProcessingResult:
     if callable(obj):
         return parse_callable(obj, context, user_input, call_args)
@@ -32,10 +29,7 @@ def check_callable(
 
 
 def parse_result(
-        result: HandlerResultType,
-        context: Context,
-        user_input: InputType,
-        call_args: tuple
+    result: HandlerResultType, context: Context, user_input: InputType, call_args: tuple
 ) -> ProcessingResult:
     """
     Transform result received from state into Result or list of Results
@@ -48,7 +42,9 @@ def parse_result(
     if isinstance(result, str):
         state = STATES.get(result, None)
         if state is None:
-            raise TypeError(f"Got string {result} as result. Strings are only accepted if it's a state's name")
+            raise TypeError(
+                f"Got string {result} as result. Strings are only accepted if it's a state's name"
+            )
         result = state
     # if we got state, return its default
     if isinstance(result, type) and issubclass(result, BaseState):
@@ -61,7 +57,7 @@ def parse_result(
     # if we received callable, call it assuming the interface func(context, user_input, *args)
     # and parse its result
     elif callable(result):
-        return parse_callable(result, context,  user_input, call_args)
+        return parse_callable(result, context, user_input, call_args)
     raise TypeError(f"Value {result} returned by state call is not valid type : {type(result)}")
 
 
@@ -72,12 +68,12 @@ class CorruptedContextRecord(Exception):
 
 
 def process(
-        user_id: str,
-        user_input: InputType,
-        *call_args,
-        context: Context = None,
-        save: bool = True,
-        delete_failed_loads = False,
+    user_id: str,
+    user_input: InputType,
+    *call_args,
+    context: Context = None,
+    save: bool = True,
+    delete_failed_loads=False,
 ) -> ProcessingResult:
     """
     Load user's context, find handler for input and execute it

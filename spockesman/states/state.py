@@ -21,6 +21,7 @@ class State(BaseState):
     Represents a node in state's graph, for any input tries to find handler in self.commands,
     throws InvalidCommandException if does not find any.
     """
+
     is_meta = True
     name = 'Basic'
 
@@ -65,8 +66,10 @@ class State(BaseState):
         """
         if not callable(binding) or isinstance(binding, type):
             if isinstance(binding, type) and not issubclass(binding, BaseState):
-                raise TypeError(f'Incorrect command binding type! Got type: {type(binding)} '
-                                f'for input: {user_input} in state {type(self).__name__}')
+                raise TypeError(
+                    f'Incorrect command binding type! Got type: {type(binding)} '
+                    f'for input: {user_input} in state {type(self).__name__}'
+                )
             return binding
         return binding(self._context, user_input, *call_args)
 
@@ -77,13 +80,9 @@ class State(BaseState):
         :return: callable, bound to command
         """
         if command not in self.commands:
-            raise InvalidCommandException(
-                f"Command '{command}' is not available in current state"
-                )
+            raise InvalidCommandException(f"Command '{command}' is not available in current state")
         if command not in COMMANDS:
-            raise NoHandlerException(
-                f"No handler registered for command '{command}'"
-            )
+            raise NoHandlerException(f"No handler registered for command '{command}'")
         return COMMANDS[command](self.commands[command])
 
     def get_context(self) -> Context:

@@ -31,7 +31,10 @@ INITIAL_STATE = InitialStateHolder()
 
 def initial(cls) -> type:
     if INITIAL_STATE.cls:
-        raise ValueError(f'Only one state can be initial!\n'
-                         f'Current initial state: {INITIAL_STATE.cls}, you tried to set another initial state: {cls}')
+        raise ValueError(
+            f'Only one state can be initial!\n'
+            f'Current initial state: {INITIAL_STATE.cls}, '
+            f'you tried to set another initial state: {cls}'
+        )
     INITIAL_STATE.cls = cls
     return cls

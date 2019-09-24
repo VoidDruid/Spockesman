@@ -10,8 +10,12 @@ class BaseState(metaclass=AbstractStateMeta):
     Abstract class representing general user state.
 
     """
-    const = ('commands', 'is_meta', 'name', 'default')  # list of class attributes that should not be modified
-    is_meta = True  # shows if class is a node in state's graph or a 'template'. Default is False (handled by metaclass)
+
+    # List of class attributes that should not be modified
+    const = ('commands', 'is_meta', 'name', 'default')
+    # Shows if class is a node in states graph or a 'template'.
+    # Default is False (handled by metaclass)
+    is_meta = True
     commands = {}  # dict of node's vertices
     default = None  # object that will be returned to processor if user got to this sate
     name = None  # state's name TODO: add validation for uniqueness

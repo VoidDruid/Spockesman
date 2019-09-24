@@ -7,6 +7,7 @@ class CyclicState(State):
     Metastate, that always calls handler of the same command,
     if it can't find another handler for input in self.commands or global commands
     """
+
     is_meta = True
     name = 'Cyclic'
     const = 'cycle'

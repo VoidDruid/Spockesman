@@ -19,6 +19,7 @@ class Context:
     """
     User context. Contains user's id, state, last command, and arbitrary additional data
     """
+
     PICKLING_PROTOCOL = 3
     default_fields = ('user_id', 'input', 'command')
 
@@ -160,7 +161,8 @@ class Context:
         :return: object with all additional info that you want to save
         """
         default_fields = {
-            key: item for key, item in self.__dict__.items()
+            key: item
+            for key, item in self.__dict__.items()
             if not key.startswith('_') and key not in self.default_fields
         }
         if not default_fields:

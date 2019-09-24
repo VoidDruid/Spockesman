@@ -13,16 +13,19 @@ def handler(command: CommandDescriptor) -> Callable:
     :param command: Command that decorated function handles
     :return: callable - decorator closure
     """
+
     def decorator(func: Callable) -> Callable:
         """
         :param func: decorated function
         :return: callable, that binds handler to final state
         """
+
         def wrapper_state(state: BaseState) -> Callable:
             """
             :param state: state name or State instance
             :return: callable - wrapper around original function
             """
+
             def wrapper(context: Context, user_input: InputType, *call_args) -> HandlerResultType:
                 """
                 Actual wrapper for original function
@@ -33,9 +36,12 @@ def handler(command: CommandDescriptor) -> Callable:
                 """
                 default_context_transform(context, state, command)
                 return func(context, user_input, *call_args)
+
             return wrapper
+
         add_bound(command, wrapper_state)
         return wrapper_state
+
     return decorator
 
 
@@ -45,11 +51,13 @@ def global_command(command: CommandDescriptor, state: BaseState = None):
     :param state: state for user after execution of handler
     :return: callable - decorator closure
     """
+
     def decorator(func: Callable) -> Callable:
         """
         :param func: decorated function
         :return: callable - wrapper around original function
         """
+
         def wrapper(context: Context, user_input: InputType, *call_args) -> HandlerResultType:
             """
             Actual wrapper for original function
@@ -62,6 +70,8 @@ def global_command(command: CommandDescriptor, state: BaseState = None):
                 context.state = state.__name__
             context.command = command.name
             return func(context, user_input, *call_args)
+
         add_global(command, wrapper)
         return wrapper
+
     return decorator

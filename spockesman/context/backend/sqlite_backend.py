@@ -9,6 +9,7 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
     """
     Implementation of abstract backend that uses redis for storage
     """
+
     @staticmethod
     def bool_from_int(value):
         if value == 0:
@@ -23,9 +24,11 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
             db = db + '.db'
         self.__db = sqlite3.connect(db, check_same_thread=False)
         self.__cursor = self.__db.cursor()
-        self.__cursor.execute('create table if not exists context'
-                              '(user_id text, type text, state text, command text, input integer,'
-                              'data text, additional text)')
+        self.__cursor.execute(
+            'create table if not exists context'
+            '(user_id text, type text, state text, command text, input integer,'
+            'data text, additional text)'
+        )
         self.__db.commit()
 
     def deactivate(self):
@@ -53,16 +56,28 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
     def save(self, context):
         data = context.dump_data()
         additional = context._get_additional_fields()
-        query = 'insert into context' \
-                '(user_id, type, state, command, input, data, additional) ' \
-                'values (?, ?, ?, ?, ?, ?, ?)'
+        query = (
+            'insert into context'
+            '(user_id, type, state, command, input, data, additional) '
+            'values (?, ?, ?, ?, ?, ?, ?)'
+        )
         state = context.state
         if state is not None:
             state_name = state.name
         else:
             state_name = None
-        self.__cursor.execute(query, (context.user_id, context.pickled_type, state_name, context.command,
-                                      int(context.input), data, additional))
+        self.__cursor.execute(
+            query,
+            (
+                context.user_id,
+                context.pickled_type,
+                state_name,
+                context.command,
+                int(context.input),
+                data,
+                additional,
+            ),
+        )
         self.__db.commit()
 
     def delete(self, *user_ids):

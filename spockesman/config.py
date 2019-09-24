@@ -32,16 +32,14 @@ STATES_SECTION = 'States'
 COMMANDS_SECTION = 'Commands'
 CONTEXT_BACKEND_SECTION = 'ContextBackend'
 
-PARSER_MAPPING = {
-    'COMMAND': command_parser,
-    'STATE': state_parser,
-}
+PARSER_MAPPING = {'COMMAND': command_parser, 'STATE': state_parser}
 
 
 class Configuration:
     """
     Container for raw configuration data
     """
+
     commands: dict
     context_backend: dict
     context_backend_type: str
@@ -61,7 +59,9 @@ class Configuration:
         self = cls()
         self.commands = getattr(module, upper_and_separate(COMMANDS_SECTION))
         self.context_backend = getattr(module, upper_and_separate(CONTEXT_BACKEND_SECTION))
-        self.context_backend_type = getattr(module, upper_and_separate(CONTEXT_BACKEND_SECTION))[TYPE_SECTION]
+        self.context_backend_type = getattr(module, upper_and_separate(CONTEXT_BACKEND_SECTION))[
+            TYPE_SECTION
+        ]
         self.states = getattr(module, upper_and_separate(STATES_SECTION), None)
         return self
 
@@ -72,10 +72,7 @@ def config_from_object(obj) -> Configuration:
     :param obj: object with configuration data, module or dict
     :return: Configuration instance
     """
-    dispatcher = {
-        dict: Configuration.from_dict,
-        ModuleType: Configuration.from_module
-    }
+    dispatcher = {dict: Configuration.from_dict, ModuleType: Configuration.from_module}
     return dispatcher[type(obj)](obj)
 
 
@@ -120,14 +117,18 @@ def generate_states(states):
         attr_dict = {}
         for key, item in config.items():
             if key == COMMANDS_SECTION:
-                attr_dict[key.lower()] = {command_parser(key): value for key, value in config['Commands'].items()}
+                attr_dict[key.lower()] = {
+                    command_parser(key): value for key, value in config['Commands'].items()
+                }
                 continue
             elif key == TYPE_SECTION:
                 continue
             else:
                 attr_dict[key.lower()] = parse_item(item)
         state_type = config[TYPE_SECTION]
-        if is_module_path(state_type):  # TODO, FIXME: hacky way to check if requested metastate is in plugin. Refactor!
+        if is_module_path(
+            state_type
+        ):  # TODO, FIXME: hacky way to check if requested metastate is in plugin. Refactor!
             dot_pos = state_type.rfind('.')
             metastate = getattr(importlib.import_module(state_type[:dot_pos]), state_type[dot_pos:])
         else:
@@ -136,9 +137,7 @@ def generate_states(states):
 
 
 def parse_item(
-        item: Union[dict, list],
-        parser=command_parser,
-        parse_list=False
+    item: Union[dict, list], parser=command_parser, parse_list=False
 ) -> Union[dict, CommandDescriptor, str, List]:
     """
     Get raw item data and try to parse it to appropriate objects
@@ -189,5 +188,3 @@ def attempt_dict_join(attr_list: list) -> Union[list, dict]:
             return attr_list
         joined.update(item)
     return joined
-
-
