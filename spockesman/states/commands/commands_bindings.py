@@ -9,7 +9,7 @@ def add_bound(command, handler) -> None:
     """
     Adds command handler to bound commands dict
     :param command: handled Command
-    :param handler: callable, generator funtion that accepts state and returns handler (state graph's edge)
+    :param handler: callable, generator function that accepts state and returns handler (state graph's edge)
     :return: Any
     """
     log.debug(f'Adding bound command: {command}')
