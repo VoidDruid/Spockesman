@@ -1,2 +1,0 @@
-PyYAML>=4.2b2
-redis>=3.2

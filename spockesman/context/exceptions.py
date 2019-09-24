@@ -1,2 +1,0 @@
-class NotSerializableDataObject(Exception):
-    pass
