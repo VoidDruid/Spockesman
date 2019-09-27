@@ -6,7 +6,7 @@ from spockesman.states.commands.command import CommandDescriptor
 
 
 def default_context_transform(
-    context: Context, state: Union[BaseState, CommandDescriptor], command: CommandDescriptor
+    context: Context, state: BaseState, command: Union[CommandDescriptor, str]
 ) -> None:
     """
     Push user to new state and set last command's name

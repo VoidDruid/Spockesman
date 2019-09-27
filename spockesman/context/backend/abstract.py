@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from typing import Iterable, Iterator, Optional
 
 from spockesman.context.context import Context
 
@@ -10,15 +11,15 @@ class AbstractBackend(metaclass=ABCMeta):
         return True
 
     @abstractmethod
-    def load(self, user_id) -> Context:
+    def load(self, user_id: str) -> Optional[Context]:
         pass
 
     @abstractmethod
-    def save(self, context) -> None:
+    def save(self, context: Context) -> None:
         pass
 
     @abstractmethod
-    def delete(self, *user_ids) -> None:  # TODO: return list of actually deleted ids
+    def delete(self, *user_ids: Iterable[str]) -> None:  # TODO: return list of actually deleted ids
         pass
 
     @abstractmethod
@@ -26,5 +27,5 @@ class AbstractBackend(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Context]:
         pass

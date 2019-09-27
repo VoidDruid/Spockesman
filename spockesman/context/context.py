@@ -1,10 +1,14 @@
+# pylint: disable=W0212,R0904
+# Access to protected methods is from Context to other context objects
+# Many public methods are needed to create simple interface for end-user
+
 try:
     import ujson as json
 except ImportError:
-    import json
+    import json  # type: ignore
 import pickle
 from copy import deepcopy
-from typing import Union, Optional, Any
+from typing import Union, Optional, Any, Dict, List
 
 from spockesman.logger import log
 from spockesman.states.base import INITIAL_STATE, STATES
@@ -23,23 +27,24 @@ class Context:
     PICKLING_PROTOCOL = 3
     default_fields = ('user_id', 'input', 'command')
 
-    def __init__(self, user_id: str, state: BaseState = None, data: dict = None):
+    def __init__(self, user_id: str, state: Optional[BaseState] = None, data: Dict = None) -> None:
         self.user_id = user_id
-        self.__state = None
+        self.__state: Optional[str] = None
         self.state = state
-        self.input = False
-        self.command = None
+        self.input: bool = False
+        self.command: Optional[str] = None
+        self._data: Dict
         if data is None:
             self._data = {}
         else:
             self._data = data
 
     @property
-    def pickled_type(self):
+    def pickled_type(self) -> bytes:
         return pickle.dumps(type(self), self.PICKLING_PROTOCOL)
 
     @staticmethod
-    def unpickle_type(type_str):
+    def unpickle_type(type_str: bytes) -> type:
         return pickle.loads(type_str)
 
     @property
@@ -49,11 +54,11 @@ class Context:
         return STATES[self.__state](self)
 
     @state.setter
-    def state(self, state_: Union[None, str, BaseState]):
+    def state(self, state_: Union[None, str, BaseState]) -> None:
         if not state_:
             self.__state = INITIAL_STATE.name
             return
-        elif isinstance(state_, str):
+        if isinstance(state_, str):
             state_name = state_
         elif isinstance(state_, type) and issubclass(state_, BaseState):
             state_name = state_.name
@@ -69,14 +74,15 @@ class Context:
             )
         self.__state = state_name
 
-    def clone(self, context) -> None:
-        self.__state = context.state
+    def clone(self, context: 'Context') -> None:
+        if context.state:
+            self.__state = context.state.name
         self.input = context.input
         self.command = context.command
         self._data = deepcopy(context._data)
         self.install_additional_fields(context.prepare_additional_fields())
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict:
         return {
             'state': self.__state,
             'input': self.input,
@@ -87,7 +93,7 @@ class Context:
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: Dict) -> 'Context':
         context = cls(data['user_id'], data['state'])
         context.input = data.get('input', False)
         context.command = data.get('command', None)
@@ -95,7 +101,7 @@ class Context:
         context._set_additional_fields(data.get('additional', None))
         return context
 
-    def store(self, key: str, value: Union[dict, list, str, int, float, bool]):
+    def store(self, key: str, value: Union[Dict, List, str, int, float, bool]) -> None:
         """
         Add data to context._data. We check that key is a string, because we save _data to json,
         which can break some keys (1 -> '1'), but we do not check value,
@@ -109,13 +115,13 @@ class Context:
             raise TypeError(f'Only strings are allowed as keys to context data, not <type(key)>')
         self._data[key] = value
 
-    def dump_data(self):
+    def dump_data(self) -> str:
         try:
             return json.dumps(self._data)
         except TypeError as e:
             raise TypeError(f'Error while dumping context data - {e.args[0]}')
 
-    def load_data(self, json_str):
+    def load_data(self, json_str: str) -> None:
         if self._data:
             raise ValueError('Data can be loaded only into empty context')
         try:
@@ -130,7 +136,7 @@ class Context:
     # context = Context('user_id')
     # context.store('item', 'Some item')
     # context['item'] == context._data['item'] == 'Some item'
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> Any:
         return self._data[item]
 
     # NOTE: We use json for data and pickle for additional fields,
@@ -169,7 +175,7 @@ class Context:
             return None
         return default_fields
 
-    def install_additional_fields(self, data: Any):
+    def install_additional_fields(self, data: Any) -> None:
         """
         Base method, that user can override to implement loading custom fields for stored 'data'
         :param data: unpickled data object from 'prepare_additional_fields', loaded from backend
@@ -177,7 +183,7 @@ class Context:
         """
         self.__dict__.update(data)
 
-    def _get_additional_fields(self):
+    def _get_additional_fields(self) -> Optional[bytes]:
         try:
             prepared_data = self.prepare_additional_fields()
             if prepared_data is None:
@@ -187,7 +193,7 @@ class Context:
             log.exception("Error while pickling additional context fields!")
             raise
 
-    def _set_additional_fields(self, data):
+    def _set_additional_fields(self, data: bytes) -> None:
         if data is None:
             return
         try:

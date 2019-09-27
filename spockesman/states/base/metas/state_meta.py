@@ -1,6 +1,12 @@
 from collections import Iterable
+from typing import Any, Dict, Tuple
 
-from spockesman.states.base.metas.const import *
+from spockesman.states.base.metas.const import (
+    CONST_PRIVATE_NAME,
+    CONST_PUBLIC_NAME,
+    NAME_FIELD_NAME,
+    IS_META_NAME,
+)
 from spockesman.states.base.metas.environment import STATES, META_STATES
 from spockesman.states.base.metas.exceptions import ConstantViolationException
 
@@ -10,12 +16,12 @@ from spockesman.states.base.metas.exceptions import ConstantViolationException
 class StateMeta(type):
     """Metaclass for all states, implements logic that joins them into state graph"""
 
-    def __setattr__(self, name, value):
-        if name in self.__dict__.get(CONST_PRIVATE_NAME, {}):
+    def __setattr__(cls, name: str, value: Any) -> None:
+        if name in cls.__dict__.get(CONST_PRIVATE_NAME, {}):
             raise ConstantViolationException()
         super().__setattr__(name, value)
 
-    def __new__(mcs, name, bases, dct):
+    def __new__(cls, name: str, bases: Tuple, dct: Dict) -> type:
         const = dct.get(CONST_PUBLIC_NAME)
         is_meta = dct.get(IS_META_NAME, False)  # it will probably be useful later
         state_name = dct.get(NAME_FIELD_NAME, None)
@@ -39,9 +45,9 @@ class StateMeta(type):
             last_const = tuple()
         dct[CONST_PRIVATE_NAME] = frozenset((*const, *last_const))  # join consts
 
-        cls = super().__new__(mcs, name, bases, dct)  # create type
+        new_cls = super().__new__(cls, name, bases, dct)  # type: ignore
         if is_meta:  # save it
-            META_STATES[state_name] = cls
+            META_STATES[state_name] = new_cls
         else:
-            STATES[state_name] = cls
-        return cls
+            STATES[state_name] = new_cls
+        return new_cls

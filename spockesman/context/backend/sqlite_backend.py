@@ -1,4 +1,8 @@
+# pylint: disable=W0212,R0904
+# Access to protected methods is to Context objects, it is needed to hide saving/loading from user
+
 import sqlite3
+from typing import Optional, Iterable, Iterator, Dict
 
 from spockesman.logger import log
 from spockesman.context.context import Context
@@ -11,15 +15,14 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
     """
 
     @staticmethod
-    def bool_from_int(value):
+    def bool_from_int(value: int) -> bool:
         if value == 0:
             return False
-        elif value == 1:
+        if value == 1:
             return True
-        else:
-            raise ValueError(f'Can not convert <int {value}> to bool')
+        raise ValueError(f'Can not convert <int {value}> to bool')
 
-    def __init__(self, db):
+    def __init__(self, db: str) -> None:
         if not db.endswith('.db'):
             db = db + '.db'
         self.__db = sqlite3.connect(db, check_same_thread=False)
@@ -31,17 +34,17 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
         )
         self.__db.commit()
 
-    def deactivate(self):
+    def deactivate(self) -> bool:
         try:
             self.__db.close()
             return True
         except sqlite3.Error:
             return False
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.deactivate()
 
-    def load(self, user_id):
+    def load(self, user_id: str) -> Optional[Context]:
         query = 'select type, state, command, input, data, additional from context where user_id=?'
         values = self.__cursor.execute(query, (user_id,)).fetchone()
         if not values:
@@ -49,11 +52,12 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
         type_, state, command, input_, data, additional = values
         context = Context.unpickle_type(type_)(user_id, state)
         context.load_data(data)
+        context.command = command
         context.input = self.bool_from_int(input_)
         context._set_additional_fields(additional)
         return context
 
-    def save(self, context):
+    def save(self, context: Context) -> None:
         data = context.dump_data()
         additional = context._get_additional_fields()
         query = (
@@ -62,10 +66,9 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
             'values (?, ?, ?, ?, ?, ?, ?)'
         )
         state = context.state
+        state_name: Optional[str] = None
         if state is not None:
             state_name = state.name
-        else:
-            state_name = None
         self.__cursor.execute(
             query,
             (
@@ -80,17 +83,17 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
         )
         self.__db.commit()
 
-    def delete(self, *user_ids):
+    def delete(self, *user_ids: Iterable[str]) -> None:
         query = 'delete from context where user_id=?'
         self.__cursor.executemany(query, user_ids)
         self.__db.commit()
 
-    def delete_all(self):
+    def delete_all(self) -> None:
         query = 'delete from context where 1'
         self.__cursor.execute(query)
         self.__db.commit()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Context]:
         query = 'select user_id from context'
         user_ids = self.__cursor.execute(query).fetchall()
         for user_id in user_ids:
@@ -100,6 +103,6 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
                 yield context
 
 
-def activate(config) -> SqliteBackend:
+def activate(config: Dict) -> SqliteBackend:
     log.debug('Activating SQLITE context backend')
     return SqliteBackend(config['Name'])

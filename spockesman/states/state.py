@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Tuple, Dict
 
 from spockesman.context.context import Context
 from spockesman.states.commands import Command, GLOBAL_COMMANDS, COMMANDS
@@ -25,14 +25,16 @@ class State(BaseState):
     is_meta = True
     name = 'Basic'
 
-    def __init__(self, context):
+    def __init__(self, context: Context) -> None:
         """
         Created concrete state graph node for user with context
         :param context: user's context
         """
         self._context = context
 
-    def __call__(self, user_input, call_args, **kwargs) -> HandlerResultType:
+    def __call__(
+        self, user_input: InputType, call_args: Tuple, **kwargs: Dict
+    ) -> HandlerResultType:
         """
         Executes state machine logic,
         for user with context passed to __init__, and triggered by user_input
@@ -42,10 +44,13 @@ class State(BaseState):
         :return:
         """
         if self._context.input:
-            command = Command[self._context.command]
+            # 'Command' is actually subscriptable
+            # pylint: disable=E1136
+            command = Command[self._context.command]  # type: ignore
         else:
             # TODO: optimize search for command
-            for command in Command:
+            # 'Command' is actually iterable
+            for command in Command:  # type: ignore # pylint: disable=E1133
                 if user_input in command.triggers:
                     self._context.command = command.name
                     break
@@ -56,7 +61,7 @@ class State(BaseState):
             binding = self.find_transition(command)
         return self.run(binding, user_input, call_args)
 
-    def run(self, binding: Callable, user_input: InputType, call_args: tuple) -> HandlerResultType:
+    def run(self, binding: Callable, user_input: InputType, call_args: Tuple) -> HandlerResultType:
         """
         Runs transition, triggered by user.
         :param binding: callable, representing state graph's edge

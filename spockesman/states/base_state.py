@@ -1,6 +1,7 @@
 """Abstract state, from which all others inherit."""
 
 from abc import abstractmethod
+from typing import Dict, Union, Any, Optional, Iterable, Tuple
 
 from spockesman.states.base.metas import AbstractStateMeta, ConstantViolationException
 
@@ -12,28 +13,29 @@ class BaseState(metaclass=AbstractStateMeta):
     """
 
     # List of class attributes that should not be modified
-    const = ('commands', 'is_meta', 'name', 'default')
+    const: Optional[Union[Iterable[str], str]] = ('commands', 'is_meta', 'name', 'default')
     # Shows if class is a node in states graph or a 'template'.
     # Default is False (handled by metaclass)
-    is_meta = True
-    commands = {}  # dict of node's vertices
+    is_meta: bool = True
+    commands: Dict = {}  # dict of node's vertices
     default = None  # object that will be returned to processor if user got to this sate
-    name = None  # state's name TODO: add validation for uniqueness
+    # state's name TODO: add validation for uniqueness
+    name: str = None  # type: ignore
 
     @classmethod
-    def is_constant_attr(cls, name) -> bool:
+    def is_constant_attr(cls, name: str) -> bool:
         # __const_attrs are added by metaclass, based on this class's 'const'
         # and 'const' of it's parents
         if name in cls.__dict__.get('__const_attrs', {}):
             return True
         return False
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         # prevents changing values of constant attributes
         if self.is_constant_attr(name):
             raise ConstantViolationException()
         super().__setattr__(name, value)
 
     @abstractmethod
-    def __call__(self, *args, **kwargs):
+    def __call__(self, user_input: Any, call_args: Tuple, **kwargs: Dict) -> Any:
         pass

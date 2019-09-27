@@ -1,7 +1,8 @@
 from collections import Iterable
+from typing import Iterable as IterableType, Any
 
 
-def is_vector(obj):
+def is_vector(obj: IterableType[Any]) -> bool:
     """
     Checks if object os a 'true iterable'
     :param obj: any object

@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Tuple
 
 from spockesman.context.context import Context
 from spockesman.states.base_state import BaseState
@@ -26,7 +26,9 @@ def handler(command: CommandDescriptor) -> Callable:
             :return: callable - wrapper around original function
             """
 
-            def wrapper(context: Context, user_input: InputType, *call_args) -> HandlerResultType:
+            def wrapper(
+                context: Context, user_input: InputType, *call_args: Tuple
+            ) -> HandlerResultType:
                 """
                 Actual wrapper for original function
                 :param context: user's context, Context instance
@@ -45,7 +47,7 @@ def handler(command: CommandDescriptor) -> Callable:
     return decorator
 
 
-def global_command(command: CommandDescriptor, state: BaseState = None):
+def global_command(command: CommandDescriptor, state: BaseState = None) -> Callable:
     """
     :param command: Command that decorated function handles
     :param state: state for user after execution of handler
@@ -58,7 +60,9 @@ def global_command(command: CommandDescriptor, state: BaseState = None):
         :return: callable - wrapper around original function
         """
 
-        def wrapper(context: Context, user_input: InputType, *call_args) -> HandlerResultType:
+        def wrapper(
+            context: Context, user_input: InputType, *call_args: Tuple
+        ) -> HandlerResultType:
             """
             Actual wrapper for original function
             :param context: user's context, Context instance
@@ -67,7 +71,7 @@ def global_command(command: CommandDescriptor, state: BaseState = None):
             :return: Any
             """
             if state:
-                context.state = state.__name__
+                context.state = state.name  # type: ignore
             context.command = command.name
             return func(context, user_input, *call_args)
 

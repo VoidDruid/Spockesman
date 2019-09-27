@@ -1,4 +1,4 @@
-def upper_and_separate(string):
+def upper_and_separate(string: str) -> str:
     """
     Transform 'ThisNotation' to 'THIS_NOTATION'
     :param string: any string

@@ -1,9 +1,9 @@
-from typing import Callable, Iterable, Union, List, Any
+from typing import Callable, Iterable, Union, Any, Tuple
 
+from spockesman.context.context import Context
 from spockesman.results import ABCResult
-from spockesman.states.base_state import BaseState
-
-BaseHandlerResult = Union[Callable, str, ABCResult, BaseState, List, Iterable]
-HandlerResultType = Union[BaseHandlerResult, Iterable[BaseHandlerResult]]
 
 InputType = Union[Any, str]
+_BaseHandlerResult = Union[Callable, str, ABCResult, type]
+HandlerResultType = Union[_BaseHandlerResult, Iterable[_BaseHandlerResult]]
+HandlerType = Callable[[Context, InputType, Tuple], HandlerResultType]

@@ -1,5 +1,8 @@
+from typing import Tuple, Dict
+
 from spockesman.states.commands import COMMANDS
 from spockesman.states.state import State, InvalidCommandException
+from spockesman.typings import HandlerResultType, InputType
 
 
 class TransientState(State):
@@ -13,11 +16,12 @@ class TransientState(State):
 
     transition = {'Command': None, 'State': None}
 
-    def __call__(self, *args, **kwargs):
-        user_input, call_args = args[:2]
+    def __call__(
+        self, user_input: InputType, call_args: Tuple, **kwargs: Dict
+    ) -> HandlerResultType:
         try:
             return super().__call__(user_input, call_args)
         except InvalidCommandException:
-            return COMMANDS[self.transition['Command']](self.transition['State'])(
+            return COMMANDS[self.transition['Command']](self.transition['State'])(  # type: ignore
                 self._context, user_input, *call_args
             )

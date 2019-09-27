@@ -1,5 +1,5 @@
 from collections import Iterable
-from typing import Callable, Optional, List, Union
+from typing import Callable, Union
 
 from spockesman.results.result import ABCResult
 from spockesman.states.base_state import BaseState
@@ -50,13 +50,13 @@ def parse_result(
     if isinstance(result, type) and issubclass(result, BaseState):
         context.state = result.name
         return check_callable(result.default, context, user_input, call_args)
-    elif not result or isinstance(result, ABCResult):
+    if not result or isinstance(result, ABCResult):
         return result
-    elif isinstance(result, Iterable):
+    if isinstance(result, Iterable):
         return [parse_result(part, context, user_input, call_args) for part in result]
     # if we received callable, call it assuming the interface func(context, user_input, *args)
     # and parse its result
-    elif callable(result):
+    if callable(result):
         return parse_callable(result, context, user_input, call_args)
     raise TypeError(f"Value {result} returned by state call is not valid type : {type(result)}")
 
@@ -65,6 +65,15 @@ class CorruptedContextRecord(Exception):
     def __init__(self, err):
         Exception.__init__(self, 'Could not load context - context backend record is corrupted')
         self.error = err
+
+
+def load_context(user_id, delete_failed_loads):
+    try:
+        return database.load(user_id)
+    except Exception as e:
+        if delete_failed_loads:
+            database.delete(user_id)
+        raise CorruptedContextRecord(e)
 
 
 def process(
@@ -89,16 +98,12 @@ def process(
     # Try loading context from backend if it was not provided
     if not context:
         try:
-            context = database.load(user_id)
+            context = load_context(user_id, delete_failed_loads)
         except BackendNotLoaded:
             raise BackendNotLoaded(
                 f"Tried to process input '{user_input}', user: '{user_id}',"
                 f"but context storage backend was not initialized and no context was passed"
             )
-        except Exception as e:
-            if delete_failed_loads:
-                database.delete(user_id)
-            raise CorruptedContextRecord(e)
     try:
         # if we no context was found, create new one and return initial states default
         if not context:

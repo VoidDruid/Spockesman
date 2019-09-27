@@ -1,8 +1,10 @@
+from typing import Optional, Dict
+
 from spockesman.states.base.metas.exceptions import ConstantViolationException
 from spockesman.util.singleton import singleton
 
-STATES = {}
-META_STATES = {}
+STATES: Dict[str, type] = {}
+META_STATES: Dict[str, type] = {}
 
 
 @singleton
@@ -11,16 +13,17 @@ class InitialStateHolder:
     __cls = None
 
     @property
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
         if self.__cls:
             return self.__cls.__name__
+        return None
 
     @property
-    def cls(self) -> type:
+    def cls(self) -> Optional[type]:
         return self.__cls
 
     @cls.setter
-    def cls(self, cls):
+    def cls(self, cls: type) -> None:
         if self.__cls:
             raise ConstantViolationException
         self.__cls = cls
@@ -29,7 +32,7 @@ class InitialStateHolder:
 INITIAL_STATE = InitialStateHolder()
 
 
-def initial(cls) -> type:
+def initial(cls: type) -> type:
     if INITIAL_STATE.cls:
         raise ValueError(
             f'Only one state can be initial!\n'

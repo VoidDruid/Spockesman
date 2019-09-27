@@ -1,5 +1,8 @@
+from typing import Tuple, Dict
+
 from spockesman.states.commands import COMMANDS
 from spockesman.states.state import State, InvalidCommandException
+from spockesman.typings import HandlerResultType, InputType
 
 
 class CyclicState(State):
@@ -14,12 +17,12 @@ class CyclicState(State):
 
     cycle = None
 
-    def __init__(self, context):
-        super().__init__(context)
-
-    def __call__(self, *args, **kwargs):
-        user_input, call_args = args[:2]
+    def __call__(
+        self, user_input: InputType, call_args: Tuple, **kwargs: Dict
+    ) -> HandlerResultType:
         try:
             return super().__call__(user_input, call_args)
         except InvalidCommandException:
-            return COMMANDS[self.cycle](self.__class__)(self._context, user_input, *call_args)
+            return COMMANDS[self.cycle](self.__class__)(  # type: ignore
+                self._context, user_input, *call_args
+            )
