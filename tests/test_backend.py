@@ -29,6 +29,7 @@ class BackendTest(BaseTestCase):
         M.context.backend.database.save(context)
         loaded_context = M.context.backend.database.load(user_id)
         self.assertDictEqual(context.to_dict(), loaded_context.to_dict())
+        return user_id
 
     def test_backend_from_config(self):
         M = reload()
@@ -51,5 +52,13 @@ class BackendTest(BaseTestCase):
         self.assertEqual(loaded_context.new_field, 'new_field_value')
         self.assertDictEqual(context.to_dict(), loaded_context.to_dict())
         self.assertEqual(type(loaded_context), CustomContext)
+
+    def test_sqlite_delete(self):
+        M = reload()
+        M.setup('tests/config.yaml')
+        user_id = self.simple_context_check(M)
+        M.context.backend.database.delete(user_id)
+        loaded = M.context.backend.database.load(user_id)
+        self.assertIsNone(loaded)
 
     # TODO: tests for redis backend

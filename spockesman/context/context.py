@@ -8,7 +8,7 @@ except ImportError:
     import json  # type: ignore
 import pickle
 from copy import deepcopy
-from typing import Union, Optional, Any, Dict, List
+from typing import Any, Dict, List, Optional, Union
 
 from spockesman.logger import log
 from spockesman.states.base import INITIAL_STATE, STATES
@@ -27,10 +27,12 @@ class Context:
     PICKLING_PROTOCOL = 3
     default_fields = ('user_id', 'input', 'command')
 
-    def __init__(self, user_id: str, state: Optional[BaseState] = None, data: Dict = None) -> None:
+    def __init__(
+        self, user_id: str, state: Union[str, BaseState] = None, data: Dict = None
+    ) -> None:
         self.user_id = user_id
         self.__state: Optional[str] = None
-        self.state = state
+        self.state = state  # type: ignore
         self.input: bool = False
         self.command: Optional[str] = None
         self._data: Dict
@@ -70,7 +72,7 @@ class Context:
         if state_name not in STATES:
             raise ValueError(
                 f"State {state_} is not registered! Maybe it's a metastate? "
-                f"If so, set flag is_meta to False, or user concrete state"
+                f'If so, set flag is_meta to False, or user concrete state'
             )
         self.__state = state_name
 
@@ -191,7 +193,7 @@ class Context:
                 return None
             return pickle.dumps(prepared_data, self.PICKLING_PROTOCOL)
         except pickle.PicklingError:
-            log.exception("Error while pickling additional context fields!")
+            log.exception('Error while pickling additional context fields!')
             raise
 
     def _set_additional_fields(self, data: bytes) -> None:
@@ -200,5 +202,5 @@ class Context:
         try:
             self.install_additional_fields(pickle.loads(data))
         except pickle.UnpicklingError:
-            log.exception("Error while unpickling additional context element!")
+            log.exception('Error while unpickling additional context element!')
             raise

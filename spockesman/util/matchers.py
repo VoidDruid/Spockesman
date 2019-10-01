@@ -1,5 +1,6 @@
-from collections import Iterable
-from typing import Iterable as IterableType, Any
+from collections.abc import Iterable
+from typing import Any
+from typing import Iterable as IterableType
 
 
 def is_vector(obj: IterableType[Any]) -> bool:

@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 BaseDict = Dict[str, str]
 AnyDict = Dict[Any, Any]

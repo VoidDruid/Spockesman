@@ -5,7 +5,7 @@ paired with their text representations that user can send.
 import random
 from collections.abc import Iterable
 from copy import copy, deepcopy
-from typing import List, Dict, Iterator, Optional
+from typing import Dict, Iterator, List, Optional
 
 from spockesman.logger import log
 from spockesman.typings import InputType
@@ -57,7 +57,7 @@ class CommandDescriptor:
         return copy(self.__triggers[0])
 
     def __repr__(self) -> str:
-        return f"<CommandDescriptor: {self.name}, triggers: {self.__triggers}>"
+        return f'<CommandDescriptor: {self.name}, triggers: {self.__triggers}>'
 
 
 class CommandContainer:

@@ -2,11 +2,11 @@
 # pylint: disable=W0212,R0904
 
 import sqlite3
-from typing import Optional, Iterable, Iterator, Dict
+from typing import Dict, Iterable, Iterator, Optional
 
-from spockesman.logger import log
-from spockesman.context.context import Context
 from spockesman.context.backend.abstract import AbstractBackend
+from spockesman.context.context import Context
+from spockesman.logger import log
 
 
 class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and inherit from it
@@ -85,7 +85,10 @@ class SqliteBackend(AbstractBackend):  # TODO: create base class SQLBackend and 
 
     def delete(self, *user_ids: Iterable[str]) -> None:
         query = 'delete from context where user_id=?'
-        self.__cursor.executemany(query, user_ids)
+        to_delete = []
+        for user_id in user_ids:
+            to_delete.append([user_id])
+        self.__cursor.executemany(query, to_delete)
         self.__db.commit()
 
     def delete_all(self) -> None:

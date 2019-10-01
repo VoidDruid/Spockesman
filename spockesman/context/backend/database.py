@@ -1,9 +1,9 @@
 from importlib import import_module
-from typing import Dict, Any, Optional, Iterable, Iterator
+from typing import Any, Dict, Iterable, Iterator, Optional
 
-from spockesman.util.singleton import singleton
-from spockesman.context.context import Context
 from spockesman.context.backend.abstract import AbstractBackend
+from spockesman.context.context import Context
+from spockesman.util.singleton import singleton
 
 
 class BackendNotLoaded(Exception):
@@ -16,12 +16,15 @@ class Database:
     Singleton class, presenting interface for working with users' contexts
     """
 
+    protected = ('deactivate_backend', 'load', 'save', '__iter__', 'delete', 'delete_all')
     active: AbstractBackend = None  # type: ignore
 
-    def __getattr__(self, item: str) -> Any:
-        if item not in ('active', 'load_backend') and not self.activated:
+    def __getattribute__(self, item: str) -> Any:
+        if item in super().__getattribute__('protected') and not super().__getattribute__(
+            'activated'
+        ):
             raise BackendNotLoaded
-        return getattr(self, item)
+        return super().__getattribute__(item)
 
     @property
     def activated(self) -> bool:
@@ -36,11 +39,11 @@ class Database:
             self.active = back.activate(config)  # type: ignore
         except AttributeError:
             raise TypeError(
-                f"Tried to load invalid backend module <{name}> "
-                f"- module has no <activate> attribute.\n"
-                f"Refer to spockesman.context.backend.redis "
-                f"for example of backend provider module.\n"
-                f"Imported module: {back}"
+                f'Tried to load invalid backend module <{name}> '
+                f'- module has no <activate> attribute.\n'
+                f'Refer to spockesman.context.backend.redis '
+                f'for example of backend provider module.\n'
+                f'Imported module: {back}'
             )
 
     def deactivate_backend(self) -> bool:

@@ -7,13 +7,15 @@ PACKAGE_NAME = 'spockesman'
 
 def reload():
     to_pop = []
-    M = sys.modules[PACKAGE_NAME]
-    M.context.backend.database.deactivate_backend()
-    for module_name, module in sys.modules.items():
-        if module_name.startswith(PACKAGE_NAME):
-            to_pop.append(module_name)
-    for module_name in to_pop:
-        sys.modules.pop(module_name)
+    M = sys.modules.get(PACKAGE_NAME)
+    if M:
+        if M.context.backend.database.active:
+            M.context.backend.database.deactivate_backend()
+        for module_name, module in sys.modules.items():
+            if module_name.startswith(PACKAGE_NAME):
+                to_pop.append(module_name)
+        for module_name in to_pop:
+            sys.modules.pop(module_name)
     return importlib.reload(importlib.import_module(PACKAGE_NAME))
 
 

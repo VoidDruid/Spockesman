@@ -1,4 +1,4 @@
-from typing import Callable, Any, Dict
+from typing import Any, Callable, Dict
 
 
 def singleton(cls: type) -> Callable[..., Any]:

@@ -2,9 +2,9 @@ from typing import Callable, Tuple
 
 from spockesman.context.context import Context
 from spockesman.states.base_state import BaseState
-from spockesman.states.commands.util import default_context_transform
-from spockesman.states.commands.commands_bindings import add_global, add_bound
 from spockesman.states.commands.command import CommandDescriptor
+from spockesman.states.commands.commands_bindings import add_bound, add_global
+from spockesman.states.commands.util import default_context_transform
 from spockesman.typings import HandlerResultType, InputType
 
 

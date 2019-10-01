@@ -1,7 +1,7 @@
 """Abstract state, from which all others inherit."""
 
 from abc import abstractmethod
-from typing import Dict, Union, Any, Optional, Iterable, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple, Union
 
 from spockesman.states.base.metas import AbstractStateMeta, ConstantViolationException
 

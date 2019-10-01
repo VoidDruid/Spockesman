@@ -1,13 +1,13 @@
-from collections import Iterable
+from collections.abc import Iterable
 from typing import Any, Dict, Tuple
 
 from spockesman.states.base.metas.const import (
     CONST_PRIVATE_NAME,
     CONST_PUBLIC_NAME,
-    NAME_FIELD_NAME,
     IS_META_NAME,
+    NAME_FIELD_NAME,
 )
-from spockesman.states.base.metas.environment import STATES, META_STATES
+from spockesman.states.base.metas.environment import META_STATES, STATES
 from spockesman.states.base.metas.exceptions import ConstantViolationException
 
 

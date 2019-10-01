@@ -1,5 +1,5 @@
-from collections import Iterable
-from typing import Callable, Union
+from collections.abc import Iterable
+from typing import Callable, Union, Tuple
 
 from spockesman.results.result import ABCResult
 from spockesman.states.base_state import BaseState
@@ -9,6 +9,7 @@ from spockesman.logger import log
 from spockesman.states import InvalidCommandException, NoHandlerException
 from spockesman.states.base import STATES
 from spockesman.typings import InputType, HandlerResultType, ProcessingResult
+from spockesman.util.flatten import flatten
 
 
 def parse_callable(
@@ -53,12 +54,16 @@ def parse_result(
     if not result or isinstance(result, ABCResult):
         return result
     if isinstance(result, Iterable):
-        return [parse_result(part, context, user_input, call_args) for part in result]
+        return flatten(parse_result(part, context, user_input, call_args) for part in result)
     # if we received callable, call it assuming the interface func(context, user_input, *args)
     # and parse its result
     if callable(result):
         return parse_callable(result, context, user_input, call_args)
-    raise TypeError(f"Value {result} returned by state call is not valid type : {type(result)}")
+    raise TypeError(f'Value {result} returned by state call is not valid type : {type(result)}')
+
+
+class NoStateException(Exception):
+    """Indicates that we could not determine users state"""
 
 
 class CorruptedContextRecord(Exception):
@@ -67,13 +72,52 @@ class CorruptedContextRecord(Exception):
         self.error = err
 
 
-def load_context(user_id, delete_failed_loads):
-    try:
-        return database.load(user_id)
-    except Exception as e:
-        if delete_failed_loads:
-            database.delete(user_id)
-        raise CorruptedContextRecord(e)
+def get_context(
+    user_id: str,
+    user_input: InputType,
+    context: Context = None,
+    state: BaseState = None,
+    delete_failed_loads: bool = False,
+) -> Tuple[Context, bool]:
+    # Try loading context from backend if it was not provided
+    if not context:
+        try:
+            context = database.load(user_id)
+        except BackendNotLoaded:
+            raise BackendNotLoaded(
+                f"Tried to process input '{user_input}', user: '{user_id}', "
+                f'but context storage backend was not initialized and no context was passed'
+            )
+        except Exception as e:
+            if delete_failed_loads:
+                database.delete(user_id)
+            raise CorruptedContextRecord(e)
+    default = False
+    # if no context was found, create new one and return initial states default
+    if not context:
+        context = Context(user_id)
+        default = True
+    # not catching exceptions here, because if they happen we want to pass them up
+    if state:
+        context.state = state
+    return context, default
+
+
+def get_result(
+    use_default: bool, context: Context, user_input: InputType, call_args
+) -> ProcessingResult:
+    if use_default:
+        if not context.state:
+            raise NoStateException(
+                f"Tried to process input '{user_input}', user: '{context.user_id}', "
+                "user did not have context, initial state is not set, "
+                "and <state> kwarg for processor was not passed! "
+                "Either set initial state or pass 'state' kwarg to processor"
+            )
+        result = context.state.default
+    else:  # else - call state
+        result = context.state(user_input, call_args)
+    return parse_result(result, context, user_input, call_args)
 
 
 def process(
@@ -83,6 +127,7 @@ def process(
     context: Context = None,
     save: bool = True,
     delete_failed_loads=False,
+    state: BaseState = None,
 ) -> ProcessingResult:
     """
     Load user's context, find handler for input and execute it
@@ -92,45 +137,33 @@ def process(
     :param context: None if context should be loaded from backend storage, or Context object
     :param save: flag indicating if Context should be saved to backend after execution
     :param delete_failed_loads: flag indicating if we should delete corrupted records
+    :param state: state that should be assigned to user context instead of current one. Optional
+
     :return: None, ABCResult, List[ABCResult]
     """
     log.debug(f"Processing input: '{user_input}', user: '{user_id}'")
-    # Try loading context from backend if it was not provided
-    if not context:
-        try:
-            context = load_context(user_id, delete_failed_loads)
-        except BackendNotLoaded:
-            raise BackendNotLoaded(
-                f"Tried to process input '{user_input}', user: '{user_id}',"
-                f"but context storage backend was not initialized and no context was passed"
-            )
+    context, default = get_context(user_id, user_input, context, state, delete_failed_loads)
     try:
-        # if we no context was found, create new one and return initial states default
-        if not context:
-            context = Context(user_id)
-            result = context.state.default
-        else:  # else - call state
-            result = context.state(user_input, call_args)
-        final_result = parse_result(result, context, user_input, call_args)
+        result = get_result(default, context, user_input, call_args)
     # catch exceptions and add info messages.
     # we do it here to avoid duplicating error messages everywhere
     except TypeError:
         raise TypeError(
             f"Tried to process input '{user_input}', user: '{user_id}', "
-            f"input is a command, handler was found, but returned value is invalid"
+            f'input is a command, handler was found, but returned value is invalid'
         )
     except InvalidCommandException:
         raise InvalidCommandException(
-            f"Tried to process input '{user_input}', user: '{user_id}',"
-            f"but input is neither global command, "
-            f"or a command available in current state: {type(context.state).__name__}"
+            f"Tried to process input '{user_input}', user: '{user_id}', "
+            f'but input is neither global command, '
+            f'or a command available in current state: {type(context.state).__name__}'
         )
     except NoHandlerException:
         raise NoHandlerException(
             f"Tried to process input '{user_input}', user: '{user_id}', "
-            f"input is a command, but no handler for it was found."
+            f'input is a command, but no handler for it was found.'
         )
     else:
         if save:
             database.save(context)
-        return final_result
+        return result

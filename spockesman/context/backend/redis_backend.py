@@ -1,15 +1,16 @@
-from typing import Optional, Iterable, Iterator, Dict
+from typing import Dict, Iterable, Iterator, Optional
+
+import redis
+
+from spockesman.context.backend.abstract import AbstractBackend
+from spockesman.context.context import Context
+from spockesman.logger import log
 
 try:
     import ujson as json
 except ImportError:
     import json  # type: ignore
 
-import redis
-
-from spockesman.logger import log
-from spockesman.context.context import Context
-from spockesman.context.backend.abstract import AbstractBackend
 
 # TODO: support url connection
 

@@ -24,7 +24,6 @@ lint:
 	pylint --jobs 4 --rcfile=setup.cfg $(CODE)
 	black --line-length=100 --skip-string-normalization --check $(CODE)
 	mypy $(CODE)
-	$(INVOKE_PYTEST) --dead-fixtures --dup-fixtures
 
 format:
 	isort --apply --recursive $(CODE)

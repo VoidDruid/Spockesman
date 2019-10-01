@@ -1,9 +1,9 @@
-from typing import Callable, Tuple, Dict
+from typing import Callable, Dict, Tuple
 
 from spockesman.context.context import Context
-from spockesman.states.commands import Command, GLOBAL_COMMANDS, COMMANDS
-from spockesman.states.commands.command import CommandDescriptor
 from spockesman.states.base_state import BaseState
+from spockesman.states.commands import COMMANDS, GLOBAL_COMMANDS, Command
+from spockesman.states.commands.command import CommandDescriptor
 from spockesman.typings import HandlerResultType, InputType
 
 

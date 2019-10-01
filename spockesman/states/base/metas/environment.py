@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 from spockesman.states.base.metas.exceptions import ConstantViolationException
 from spockesman.util.singleton import singleton

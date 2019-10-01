@@ -1,4 +1,4 @@
-from spockesman.processor import process
+from spockesman.processor import process, NoStateException, CorruptedContextRecord
 from spockesman.config import setup
 from spockesman.states import *
 from spockesman.context import Context

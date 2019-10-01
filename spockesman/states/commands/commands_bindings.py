@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Any, Callable
 
 from spockesman.logger import log
 from spockesman.states.base_state import BaseState

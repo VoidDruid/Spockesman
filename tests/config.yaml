@@ -11,8 +11,7 @@ ContextBackend:
   Port:
   User:
   Password:
-  Name: test_db
-Global: [Globs]
+  Name: test
 States:
   Main:
     Type: Basic

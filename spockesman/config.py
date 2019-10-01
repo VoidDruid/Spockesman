@@ -1,17 +1,16 @@
 import importlib
 from types import ModuleType
-from typing import Union, List, Any, Callable, Optional, Dict
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import yaml
 
 from spockesman.context.backend import database
 from spockesman.logger import log
 from spockesman.states import Command
-from spockesman.states.commands.command import CommandDescriptor
 from spockesman.states.base import META_STATES
-from spockesman.states.commands.command import generate_commands
-from spockesman.util.string import upper_and_separate
+from spockesman.states.commands.command import CommandDescriptor, generate_commands
 from spockesman.util.matchers import is_vector
+from spockesman.util.string import upper_and_separate
 
 
 # TODO, FIXME: bad check if string is a path to module. Refactor!

@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Union, Any, Tuple
+from typing import Any, Callable, Iterable, Tuple, Union
 
 from spockesman.context.context import Context
 from spockesman.results import ABCResult

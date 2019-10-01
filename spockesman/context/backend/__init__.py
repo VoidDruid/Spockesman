@@ -1,1 +1,1 @@
-from spockesman.context.backend.database import database, BackendNotLoaded
+from spockesman.context.backend.database import BackendNotLoaded, database

@@ -1,7 +1,7 @@
-from typing import Tuple, Dict
+from typing import Dict, Tuple
 
 from spockesman.states.commands import COMMANDS
-from spockesman.states.state import State, InvalidCommandException
+from spockesman.states.state import InvalidCommandException, State
 from spockesman.typings import HandlerResultType, InputType
 
 
