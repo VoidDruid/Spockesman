@@ -30,7 +30,7 @@ class Database:
     def load_backend(self, name: str, config: Dict) -> None:
         try:
             back = import_module('spockesman.context.backend.' + name)
-        except ImportError:  # load plugged-in module
+        except ImportError:  # load plugin module
             back = import_module(name)  # TODO: support plugins in format spockesman.backend.*
         try:
             self.active = back.activate(config)  # type: ignore

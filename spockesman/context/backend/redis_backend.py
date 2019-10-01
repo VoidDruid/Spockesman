@@ -40,7 +40,7 @@ class RedisBackend(AbstractBackend):
         self.__redis.delete(user_ids)
 
     def delete_all(self) -> None:
-        self.__redis.flushdb()
+        raise NotImplementedError()
 
     def __iter__(self) -> Iterator[Context]:
         for key in self.__redis.scan_iter():

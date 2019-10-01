@@ -14,34 +14,34 @@ message_queue = Queue()
 
 
 class TelegramBot:
-    __updater: Updater
-    __dispatcher: Dispatcher
-    __number_threads = 4
+    _updater: Updater
+    _dispatcher: Dispatcher
+    _number_threads = 4
 
     def __init__(self):
-        self.__locks = {}
-        for _ in range(TelegramBot.__number_threads):
+        self._locks = {}
+        for _ in range(TelegramBot._number_threads):
             t = Thread(target=self.process_messages, daemon=True)
             t.start()
         self.create_bot()
 
     def create_bot(self):
-        self.__updater = Updater(token=TOKEN)
-        self.__dispatcher = self.__updater.dispatcher
-        self.__dispatcher.add_handler(MessageHandler(Filters.all, self.text_handler))
+        self._updater = Updater(token=TOKEN)
+        self._dispatcher = self._updater.dispatcher
+        self._dispatcher.add_handler(MessageHandler(Filters.all, self.text_handler))
 
     def get_lock(self, chat_id):
-        if chat_id not in self.__locks:
-            self.__locks[chat_id] = Lock()
-        return self.__locks[chat_id].acquire(False)
+        if chat_id not in self._locks:
+            self._locks[chat_id] = Lock()
+        return self._locks[chat_id].acquire(False)
 
     def release_lock(self, chat_id):
-        self.__locks[chat_id].release()
-        self.__locks.pop(chat_id)
+        self._locks[chat_id].release()
+        self._locks.pop(chat_id)
 
     @property
     def start_method(self):
-        return self.__updater.start_polling
+        return self._updater.start_polling
 
     @run_async
     def text_handler(self, bot, update):
@@ -68,10 +68,14 @@ class TelegramBot:
             log.info(f"[MSG_THREAD {current_thread().ident}] Getting next message")
             chat_id, reply = message_queue.get()
             try:
-                self.__updater.bot.send_message(chat_id=chat_id, text=reply.text, reply_markup=reply.ui)
-            except Exception as e:
-                log.exception(e)
-            log.info(f"[MSG_THREAD {current_thread().ident}] Message for '{chat_id}' finished")
+                self._updater.bot.send_message(chat_id=chat_id, text=reply.text, reply_markup=reply.ui)
+            except Exception:
+                log.exception(
+                    f"[MSG_THREAD {current_thread().ident}] "
+                    f"Error while sending message for '{chat_id}'"
+                )
+            else:
+                log.info(f"[MSG_THREAD {current_thread().ident}] Message for '{chat_id}' finished")
             message_queue.task_done()
 
 

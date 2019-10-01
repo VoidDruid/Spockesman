@@ -1,5 +1,5 @@
+# access to protected methods in Context objects, it is needed to hide saving/loading from user:
 # pylint: disable=W0212,R0904
-# Access to protected methods is to Context objects, it is needed to hide saving/loading from user
 
 import sqlite3
 from typing import Optional, Iterable, Iterator, Dict

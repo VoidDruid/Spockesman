@@ -2,7 +2,7 @@
 name = "spockesman"
 version = "0.4.0"
 description = "Declarative state-machine - mainly for chat bots"
-authors = ["Beschastnov Igor Vladimirovich <i.beschastnov@tcsbank.ru>"]
+authors = ["Beschastnov Igor Vladimirovich <i.beschastnov@tinkoff.ru>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"

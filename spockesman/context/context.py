@@ -160,6 +160,7 @@ class Context:
     #
     #     def install_additional_fields(self, data):
     #         self.new_field = data['new_field']
+    #
 
     def prepare_additional_fields(self) -> Any:
         """
