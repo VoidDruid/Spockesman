@@ -1,6 +1,4 @@
 # Spockesman 
-<img src="logo.png" width="182" height="196"/>
-
 ###### Declarative state-machine - mainly for chat bots
 
 Фреймворк представляет собой реализацию паттерна state machine,
