@@ -9,7 +9,7 @@ from spockesman.logger import log
 from spockesman.states import InvalidCommandException, NoHandlerException
 from spockesman.states.base import STATES
 from spockesman.typings import InputType, HandlerResultType, ProcessingResult
-from spockesman.util.flatten import flatten
+from spockesman.util.list import flatten
 
 
 def parse_callable(

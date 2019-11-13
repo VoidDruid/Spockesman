@@ -45,7 +45,10 @@ class RedisBackend(AbstractBackend):
 
     def __iter__(self) -> Iterator[Context]:
         for key in self.__redis.scan_iter():
-            context = self.load(key)
+            try:
+                context = self.load(key)
+            except ValueError:  # if we could not load json - probably that is some external data
+                continue
             if context:
                 yield context
 

@@ -2,38 +2,14 @@
 Defines commands enum of all available commands
 paired with their text representations that user can send.
 """
-import random
 from collections.abc import Iterable
-from copy import copy, deepcopy
+from copy import copy
 from typing import Dict, Iterator, List, Optional
 
 from spockesman.logger import log
 from spockesman.typings import InputType
 from spockesman.util.singleton import singleton
-
-
-class Proxy:
-    def __init__(self, choices: List[InputType]) -> None:
-        self.choices = choices
-
-    @property
-    def first(self) -> InputType:
-        return copy(self.choices[0])
-
-    @property
-    def last(self) -> InputType:
-        return copy(self.choices[-1])
-
-    @property
-    def any(self) -> InputType:
-        return copy(random.choice(self.choices))
-
-    @property
-    def all(self) -> List[InputType]:
-        return deepcopy(self.choices)
-
-    def __contains__(self, item: InputType) -> bool:
-        return item in self.choices
+from spockesman.util.list import ListProxy
 
 
 # TODO: rewrite logic for triggers, to accept *events*
@@ -49,8 +25,8 @@ class CommandDescriptor:
         self.__triggers = triggers
 
     @property
-    def triggers(self) -> Proxy:
-        return Proxy(self.__triggers)
+    def triggers(self) -> ListProxy:
+        return ListProxy(self.__triggers)
 
     @property
     def trigger(self) -> InputType:
