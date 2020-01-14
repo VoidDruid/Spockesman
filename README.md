@@ -119,6 +119,7 @@ from spockesman import Context
 context = Context('user_id')
 context.store('key', 'value')
 context['key'] == 'value'  # True
+context.pop('key')  == 'value' # removes 'key', returns 'value'
 ```
 Для хранения контекстов используется единый механизм, встроенный в фреймворк - программист может выбрать между redis и sqlite
 (или написать свой бэкенд для хранения, для примера можно взять `spockesman.context.backend.redis_backend`), и описать его конфигурацию в .yaml файле или питоновском модуле (примеры config.py, config.yaml есть в tests и в example).

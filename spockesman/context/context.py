@@ -28,7 +28,7 @@ class Context:
     default_fields = ('user_id', 'input', 'command')
 
     def __init__(
-        self, user_id: str, state: Union[str, BaseState] = None, data: Dict = None
+        self, user_id: Union[str, int], state: Union[str, BaseState] = None, data: Dict = None
     ) -> None:
         self.user_id = user_id
         self.__state: Optional[str] = None
@@ -140,6 +140,12 @@ class Context:
     # context['item'] == context._data['item'] == 'Some item'
     def __getitem__(self, item: str) -> Any:
         return self._data[item]
+
+    def get(self, item: str, default: Any) -> Any:
+        return self._data.get(item, default)
+
+    def pop(self, item: str) -> Any:
+        return self._data.pop(item)
 
     # NOTE: We use json for data and pickle for additional fields,
     # because json is safe and pickle is NOT, so we provide 'data' dict as default storage

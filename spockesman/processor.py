@@ -54,7 +54,10 @@ def parse_result(
     if not result or isinstance(result, ABCResult):
         return result
     if isinstance(result, Iterable):
-        return flatten(parse_result(part, context, user_input, call_args) for part in result)
+        return flatten(
+            (parse_result(part, context, user_input, call_args) for part in result),
+            ignore=ABCResult,
+        )
     # if we received callable, call it assuming the interface func(context, user_input, *args)
     # and parse its result
     if callable(result):

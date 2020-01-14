@@ -1,5 +1,5 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Iterable, Union
 
 from spockesman.results import ABCResult
 
-ProcessingResult = Optional[Union[ABCResult, Tuple]]
+ProcessingResult = Optional[Union[ABCResult, Iterable[ABCResult]]]

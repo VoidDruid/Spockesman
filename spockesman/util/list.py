@@ -1,6 +1,6 @@
 import random
 from copy import copy, deepcopy
-from typing import List, Iterable as IterableType, Tuple, Iterable
+from typing import List, Iterable as IterableType, Tuple, Type, Iterable, Union, Optional
 
 from spockesman.typings import InputType
 
@@ -29,11 +29,15 @@ class ListProxy:
         return item in self.choices
 
 
-def flatten(sequence: IterableType) -> Tuple:
+def flatten(sequence: IterableType, ignore: Optional[Union[Type, List[Type]]] = None) -> Tuple:
     result = []
     for item in sequence:
-        if not isinstance(item, Iterable) or isinstance(item, str):
+        if (
+            not isinstance(item, Iterable) or
+            isinstance(item, str) or
+            (ignore is not None and isinstance(item, ignore))
+        ):
             result.append(item)
         else:
-            result.extend(flatten(item))
+            result.extend(flatten(item, ignore=ignore))
     return tuple(result)
