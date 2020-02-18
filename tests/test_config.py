@@ -1,12 +1,13 @@
 from .util import BaseTestCase
 
 
-class YAMLConfigTest(BaseTestCase):
+class ConfigTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         cls.setUpPackage(cls)
         cls.STATES = cls.M.states.base.STATES
-        cls.M.setup('tests/config.yaml')
+        cls.M.setup('tests.config')
+        cls.createStates(cls)
 
     def test_commands(self):
         self.assertIn('Start', self.M.Command)
@@ -41,11 +42,3 @@ class YAMLConfigTest(BaseTestCase):
             self.STATES['Transient'].transition,
             {'Command': self.M.Command.Passd, 'State': 'Repeat'},
         )
-
-
-class ModuleConfigTest(YAMLConfigTest):
-    @classmethod
-    def setUpClass(cls):
-        cls.setUpPackage(cls)
-        cls.STATES = cls.M.states.base.STATES
-        cls.M.setup('tests.config')

@@ -28,3 +28,23 @@ class BaseTestCase(unittest.TestCase):
     def tearDownClass(cls):
         if hasattr(cls, 'M') and cls.M.context.backend.database.active:
             cls.M.context.backend.database.delete_all()
+
+    @staticmethod
+    def createStates(obj):
+        M = obj.M
+        class Main(M.State):
+            commands = {
+                M.Command.Start: 'Repeat',
+                M.Command.Hi: 'Transient'
+            }
+        
+        class Repeat(M.CyclicState):
+            cycle = M.Command.Echo
+            commands = {
+                M.Command.End: 'Main',
+            }
+        class Transient(M.TransientState):
+            transition = {
+                'Command': M.Command.Passd,
+                'State': 'Repeat',
+            }

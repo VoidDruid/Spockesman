@@ -7,7 +7,7 @@ class ContextTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         cls.setUpPackage(cls)
-        cls.M.setup('tests/config.yaml')
+        cls.M.setup('tests.config')
 
     @property
     def context(self):

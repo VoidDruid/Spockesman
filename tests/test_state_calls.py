@@ -13,7 +13,8 @@ class StateCallsTest(BaseTestCase):
     def setUpClass(cls):
         cls.setUpPackage(cls)
         cls.STATES = cls.M.states.base.STATES
-        cls.M.setup('tests/config.yaml')
+        cls.M.setup('tests.config')
+        cls.createStates(cls)
         cls.context = cls.M.Context(cls.user_id)
 
         @cls.M.handler(cls.M.Command.Start)

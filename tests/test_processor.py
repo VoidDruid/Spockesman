@@ -25,7 +25,8 @@ class ProcessorTest(BaseTestCase):
     def test_base_processing(self):
         with self.assertRaises(self.M.BackendNotLoaded):
             self.M.processor.process(self.user_id, self.test_input)
-        self.M.setup('tests/config.yaml')
+        self.M.setup('tests.config')
+        self.createStates(self)
         with self.assertRaises(self.M.NoStateException):
             self.M.processor.process(self.user_id, self.test_input)
         first_proc = self.M.processor.process(self.user_id, self.test_input, state='Main')
@@ -40,7 +41,8 @@ class ProcessorTest(BaseTestCase):
         self.assertEqual(context.state.name, 'Main')
 
     def prepare_context(self):
-        self.M.setup('tests/config.yaml')
+        self.M.setup('tests.config')
+        self.createStates(self)
         self.M.context.backend.database.save(self.M.Context(self.user_id, state='Main'))
 
     def test_processing_loaded(self):

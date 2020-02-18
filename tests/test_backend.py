@@ -33,7 +33,7 @@ class BackendTest(BaseTestCase):
 
     def test_backend_from_config(self):
         M = reload()
-        M.setup('tests/config.yaml')
+        M.setup('tests.config')
         self.simple_context_check(M)
 
     def test_sqlite_backend(self):
@@ -55,7 +55,7 @@ class BackendTest(BaseTestCase):
 
     def test_sqlite_delete(self):
         M = reload()
-        M.setup('tests/config.yaml')
+        M.setup('tests.config')
         user_id = self.simple_context_check(M)
         M.context.backend.database.delete(user_id)
         loaded = M.context.backend.database.load(user_id)
